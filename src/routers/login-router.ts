@@ -5,6 +5,7 @@ import { bodyLoginValidatorMiddleware, bodyPasswordValidatorMiddleware } from ".
 import { validationResult } from "express-validator"
 import { HTTP_CODES } from "../utility"
 import { UserRepository } from "../repositories/user-db-repository"
+import { UserService } from "../business/user-business-layer"
 
 export const LoginRouter =  Router({})
 
@@ -21,10 +22,10 @@ LoginRouter.post('/',
     async (req: RequestWithBody<LoginInputModel>, res) => {
     const validation = validationResult(req)
     if (validation.isEmpty()) {
-        const user = await UserRepository.FindUserByLogin(req.body.login)
-        if (user && req.body.password === user.password) {
+        const user = await UserService.authorizationUser(req.body.login, req.body.password)
+        if (user) {
                 // @ts-ignore
-                req.session.user = { id: user.id, username: user.login, email: user.email, isAdmin: user.isAdmin };
+                req.session.user = user;
                 res.redirect('/profile');
             } else {
                 res.status(HTTP_CODES.BAD_REQUEST_400).send('Неправильний логін або пароль')
