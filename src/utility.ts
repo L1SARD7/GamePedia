@@ -6,3 +6,5 @@ export let HTTP_CODES = {
     Unauthorized_401: 401,
     NOT_FOUND_404: 404
 }
+
+export const JWT_Secret = process.env.JWT_Secret || "123"
