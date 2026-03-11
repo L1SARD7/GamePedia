@@ -4,7 +4,6 @@ import { LoginInputModel } from "../models/LoginInputModel"
 import { bodyLoginValidatorMiddleware, bodyPasswordValidatorMiddleware } from "../validator/LoginAndRegInputDataValidator"
 import { validationResult } from "express-validator"
 import { HTTP_CODES } from "../utility"
-import { UserRepository } from "../repositories/user-db-repository"
 import { UserService } from "../business/user-business-layer"
 import { jwtService } from "../application/jwtService"
 
@@ -28,8 +27,9 @@ LoginRouter.post('/',
             // @ts-ignore
             const token = await jwtService.createJWT(user)
             // @ts-ignore
-            req.session.user = user;
-            req.headers.authorization = token
+            res.cookie('accessToken', token, {
+                httpOnly: true
+            })
             res.status(201).redirect('/profile');
             } else {
                 res.status(HTTP_CODES.BAD_REQUEST_400).send('Неправильний логін або пароль')

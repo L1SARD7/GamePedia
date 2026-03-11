@@ -5,3 +5,10 @@ export type UserViewModel = {
     passwordHash: string,
     isAdmin: boolean
 }
+
+export type UserInfoModel = {
+    id: Number, 
+    login: string,
+    email: string,
+    isAdmin: boolean
+}

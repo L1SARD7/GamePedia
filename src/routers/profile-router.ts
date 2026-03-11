@@ -1,17 +1,18 @@
 import { Router } from "express"
 import { reviewService } from "../business/review-business-layer"
 import { gamesService } from "../business/games-business-layer"
+import { authMiddleware } from "../validator/auth-middleware"
 
 export const ProfileRouter =  Router({})
 
 
 
-ProfileRouter.get('/', 
+ProfileRouter.get('/', authMiddleware,
     async (req, res) => {
     // @ts-ignore
-        if (req.session.user) {
+        if (req.user) {
             // @ts-ignore
-            const ReviewsMadedByUser = await reviewService.GetReviews(null, req.session.user.id) || []
+            const ReviewsMadedByUser = await reviewService.GetReviews(null, req.user.id) || []
             const gameIds = [...new Set(ReviewsMadedByUser.map(r => r.gameId))];
             const games = await gamesService.GetManyGamesByID(gameIds)
             
@@ -24,15 +25,14 @@ ProfileRouter.get('/',
                 };
             });
                 // @ts-ignore
-            res.render('profile', { user: req.session.user, myReviews: userReviews })
+            res.render('profile', { user: req.user, myReviews: userReviews })
     }
     else res.redirect('/login')
 })
 
 ProfileRouter.post('/logout',
     async (req, res) => {
-        req.session.destroy(() => {
-            res.redirect('/')
-        })
+        res.clearCookie('accessToken')
+        res.redirect('/')
     }
 )

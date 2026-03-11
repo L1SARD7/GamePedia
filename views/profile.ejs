@@ -11,7 +11,7 @@
     <h1>Мій кабінет</h1>
     <div class="profile-card">
         <div><b>Логін:</b> <%= user.username || user.login %></div>
-        <div><b>Email:</b> <%= user.email || 'не вказано' %></div>
+        <div><b>Email:</b> <%= user.userEmail|| 'не вказано' %></div>
         <% if (user.isAdmin) { %>
             <div style="color:#ffd700;"><b>Статус:</b> Адміністратор</div>
         <% } %>

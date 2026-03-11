@@ -1,12 +1,14 @@
 import express, { NextFunction, Response, Request } from 'express';
 import { GamesRouter } from './routers/game-router';
 import { LoginRouter } from './routers/login-router';
-import session from 'express-session';
 import { RegistrationRouter } from './routers/registration-router';
 import { ProfileRouter } from './routers/profile-router';
 import { ReviewRouter } from './routers/review-router';
 import methodOverride from 'method-override'
 import { MainRouter } from './routers/main-page-router';
+import cookieParser from 'cookie-parser';
+import { jwtService } from './application/jwtService';
+
 export const app = express()
 
 let BodyJsonMiddleware = express.json()
@@ -15,15 +17,15 @@ app.use(BodyJsonMiddleware)
 app.set('view engine', 'ejs')
 app.use(express.static('front'))
 
-app.use(session({
-    secret: 'super-secret',
-    resave: true,
-    saveUninitialized: true,
-}));
+app.use(cookieParser())
 
-app.use((req, res, next) => {
-    // @ts-ignore
-    res.locals.user = req.session.user || null;
+app.use(async (req, res, next) => {
+    res.locals.user = null;
+
+    if (req.cookies.accessToken) {
+        const userInfo = await jwtService.getUserInfoByToken(req.cookies.accessToken)
+        res.locals.user = userInfo;
+    }
     next();
 });
 app.use(express.urlencoded({ extended: true }));

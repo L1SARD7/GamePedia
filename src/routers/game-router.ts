@@ -8,6 +8,7 @@ import { gameDataInputValidatorMiddleware, paramsIdValidatorMiddleware, queryGen
 import { validationResult } from "express-validator"
 import { gamesService } from "../business/games-business-layer"
 import { reviewService } from "../business/review-business-layer"
+import { authMiddleware } from "../validator/auth-middleware"
 
 export const GamesRouter =  Router({})
 
@@ -21,14 +22,14 @@ GamesRouter.get('/add',
 )
 
 GamesRouter.post('/add',
-    gameDataInputValidatorMiddleware,
+    gameDataInputValidatorMiddleware, authMiddleware,
     async (req: RequestWithBody<CreateGameInputModel>, res: Response) => {
     const validation = validationResult(req)
     if (!validation.isEmpty() ) {
         res.status(HTTP_CODES.BAD_REQUEST_400).send({errors: validation.array()})
     }
     // @ts-ignore
-    if (req.session.user.isAdmin) {
+    if (req.user.isAdmin) {
         const CreatedGame = await gamesService.CreateNewGame(req.body.title, 
             req.body.genre,
             req.body.release_year, 
