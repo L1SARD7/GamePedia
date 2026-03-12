@@ -30,18 +30,18 @@ ReviewRouter.post('/:id', authMiddleware,
     const validation = validationResult(req)
     if (validation.isEmpty()) {
         // @ts-ignore
-        if (!req.session.user) {
+        if (!req.user) {
             res.status(200).send('Щоб залишити відгук, потрібно бути авторизованим');
         } else {
             // @ts-ignore
-            const isAlreadyCreated: [] = await reviewService.GetReviews(+req.params.id, +req.session.user.id)
+            const isAlreadyCreated: [] = await reviewService.GetReviews(+req.params.id, +req.user.id)
             if (isAlreadyCreated.length !== 0) {
                 res.status(200).send('В вас вже є залишений відгук цій грі.')
             } else {
                 // @ts-ignore
-                if (req.session.user) {
+                if (req.user) {
                     // @ts-ignore
-                    const CreatedReview = await reviewService.CreateNewReview(req.body.rating, req.body.text, +req.params.id, req.session.user.id, req.session.user.username)
+                    const CreatedReview = await reviewService.CreateNewReview(req.body.rating, req.body.text, +req.params.id, req.user.id, req.user.username)
                     if (CreatedReview) {
                         await gamesService.UpdateAvgRating(+req.params.id)
                         res.status(HTTP_CODES.Created_201).redirect(`/games/${req.params.id}`)
@@ -92,7 +92,7 @@ ReviewRouter.put('/:id', authMiddleware,
     if (validation.isEmpty()) {
         const isExist : any = await reviewService.GetReviewById(+req.params.id)
         // @ts-ignore
-        if (req.session.user && isExist) {
+        if (req.user && isExist) {
             // @ts-ignore
             const changedReview = await reviewService.ChangeReview(+req.params.id, req.body.rating, req.body.text)
             if (changedReview) {

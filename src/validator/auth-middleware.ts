@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express"
-import { userInfo } from "os"
 import { jwtService } from "../application/jwtService"
 
 

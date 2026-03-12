@@ -6,7 +6,7 @@ import { JWT_Secret } from "../utility";
 export const jwtService = {
     async createJWT (user: any) {
         const payload = {
-            userId: user.id, 
+            id: user.id, 
             username: user.username,
             userEmail: user.email,
             isAdmin: user.isAdmin
@@ -17,7 +17,10 @@ export const jwtService = {
     },
 
     async getUserInfoByToken (token: string) {
-        const user = jwt.verify(token, JWT_Secret)
-        return user
-    }
+        try {
+            const user = jwt.verify(token, JWT_Secret)
+            return user
+        } catch {
+            return null
+        }}
 }
