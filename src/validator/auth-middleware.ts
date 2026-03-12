@@ -5,7 +5,7 @@ import { jwtService } from "../application/jwtService"
 
 
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request<any, any, any, any>, res: Response, next: NextFunction) => {
     if (req.user) {
         return next()
     }

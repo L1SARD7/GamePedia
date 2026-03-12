@@ -12,9 +12,9 @@ import { authMiddleware } from "../validator/auth-middleware"
 
 export const GamesRouter =  Router({})
 
-GamesRouter.get('/add', 
+GamesRouter.get('/add', authMiddleware,
     async (req: any, res: any) => {
-        if (!req.session.user || !req.session.user.isAdmin) {
+        if (!req.user || !req.user.isAdmin) {
         return res.status(HTTP_CODES.Unauthorized_401).send("Доступ лише для адміністратора");
     }
     res.render('create-new-game');
@@ -100,12 +100,15 @@ GamesRouter.get('/:id',
 })
 
 GamesRouter.get('/:id/edit',
-    paramsIdValidatorMiddleware,
+    paramsIdValidatorMiddleware, authMiddleware, 
     async (req: RequestWithParams<URIParamsId>,
     res: Response) => {
     const validation = validationResult(req)
     if (!validation.isEmpty()) {
         res.status(HTTP_CODES.BAD_REQUEST_400).send({errors: validation.array()})
+    }
+    if (!req.user?.isAdmin) {
+        res.sendStatus(401)
     }
     const SelectedGame = await gamesService.GetGameByID(+req.params.id)
     if (SelectedGame) {
@@ -116,12 +119,15 @@ GamesRouter.get('/:id/edit',
     }
 })
 
-GamesRouter.delete('/:id',
+GamesRouter.delete('/:id', authMiddleware,
     paramsIdValidatorMiddleware,
     async (req: RequestWithParams<URIParamsId>, res) => {
     const validation = validationResult(req)
     if (!validation.isEmpty()) {
         res.status(HTTP_CODES.BAD_REQUEST_400).send({errors: validation.array()})
+    }
+    if (!req.user?.isAdmin) {
+        res.sendStatus(401)
     }
     let isDeleted = await gamesService.DeleteGame(+req.params.id)
     if (isDeleted) {
@@ -133,6 +139,7 @@ GamesRouter.delete('/:id',
 })
 
 GamesRouter.put('/:id',
+    authMiddleware,
     paramsIdValidatorMiddleware,
     gameDataInputValidatorMiddleware,
     async (req: RequestWithParamsAndBody<URIParamsId, UpdateGameInputModel>,
@@ -140,6 +147,9 @@ GamesRouter.put('/:id',
         const validation = validationResult(req)
     if (!validation.isEmpty()) {
         res.status(HTTP_CODES.BAD_REQUEST_400).send({errors: validation.array()})
+    }
+    if (!req.user?.isAdmin) {
+        res.sendStatus(401)
     }
     const UpdatedGame = await gamesService.UpdateGame(+req.params.id, req.body.title, 
             req.body.genre,

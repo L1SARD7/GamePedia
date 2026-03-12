@@ -8,6 +8,7 @@ import { reviewService } from "../business/review-business-layer"
 import { URIParamsId } from "../models/URIParamsId"
 import { paramsIdValidatorMiddleware } from "../validator/GamesInputDataValidator"
 import { gamesService } from "../business/games-business-layer"
+import { authMiddleware } from "../validator/auth-middleware"
 
 export const ReviewRouter =  Router({})
 
@@ -22,7 +23,7 @@ ReviewRouter.get('/',
     }
 )
 
-ReviewRouter.post('/:id',
+ReviewRouter.post('/:id', authMiddleware,
     bodyRatingReviewValidatorMiddleware,
     bodyTextReviewValidatorMiddleware,
     async (req: RequestWithParamsAndBody<URIParamsId, ReviewInputModel>, res) => {
@@ -60,7 +61,7 @@ ReviewRouter.post('/:id',
     }
 })
 
-ReviewRouter.delete('/:id',
+ReviewRouter.delete('/:id', authMiddleware,
     paramsIdValidatorMiddleware,
     async (req: RequestWithParams<URIParamsId>, res) => {
     const validation = validationResult(req)
@@ -83,7 +84,7 @@ ReviewRouter.delete('/:id',
     }
 })
 
-ReviewRouter.put('/:id',
+ReviewRouter.put('/:id', authMiddleware,
     bodyRatingReviewValidatorMiddleware,
     bodyTextReviewValidatorMiddleware,
     async (req: RequestWithParamsAndBody<URIParamsId, ReviewInputModel>, res) => {
