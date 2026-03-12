@@ -9,10 +9,11 @@ import { validationResult } from "express-validator"
 import { gamesService } from "../business/games-business-layer"
 import { reviewService } from "../business/review-business-layer"
 import { authMiddleware } from "../validator/auth-middleware"
+import { verifyAdmin } from "../validator/verify-admin-middleware"
 
 export const GamesRouter =  Router({})
 
-GamesRouter.get('/add', authMiddleware,
+GamesRouter.get('/add', authMiddleware, verifyAdmin,
     async (req: any, res: any) => {
         if (!req.user || !req.user.isAdmin) {
         return res.status(HTTP_CODES.Unauthorized_401).send("Доступ лише для адміністратора");
@@ -22,14 +23,13 @@ GamesRouter.get('/add', authMiddleware,
 )
 
 GamesRouter.post('/add',
-    gameDataInputValidatorMiddleware, authMiddleware,
+    authMiddleware, verifyAdmin,
+    gameDataInputValidatorMiddleware, 
     async (req: RequestWithBody<CreateGameInputModel>, res: Response) => {
     const validation = validationResult(req)
     if (!validation.isEmpty() ) {
         res.status(HTTP_CODES.BAD_REQUEST_400).send({errors: validation.array()})
     }
-    // @ts-ignore
-    if (req.user.isAdmin) {
         const CreatedGame = await gamesService.CreateNewGame(req.body.title, 
             req.body.genre,
             req.body.release_year, 
@@ -45,10 +45,6 @@ GamesRouter.post('/add',
         } else {
             res.sendStatus(HTTP_CODES.BAD_REQUEST_400)
         }
-    }
-    else {
-        res.send('Недостатньо прав для добавлення гри.')
-    }
 })
 
 GamesRouter.get('/list',
@@ -100,15 +96,13 @@ GamesRouter.get('/:id',
 })
 
 GamesRouter.get('/:id/edit',
-    paramsIdValidatorMiddleware, authMiddleware, 
+    authMiddleware, verifyAdmin,
+    paramsIdValidatorMiddleware, 
     async (req: RequestWithParams<URIParamsId>,
     res: Response) => {
     const validation = validationResult(req)
     if (!validation.isEmpty()) {
         res.status(HTTP_CODES.BAD_REQUEST_400).send({errors: validation.array()})
-    }
-    if (!req.user?.isAdmin) {
-        res.sendStatus(401)
     }
     const SelectedGame = await gamesService.GetGameByID(+req.params.id)
     if (SelectedGame) {
@@ -119,15 +113,12 @@ GamesRouter.get('/:id/edit',
     }
 })
 
-GamesRouter.delete('/:id', authMiddleware,
+GamesRouter.delete('/:id', authMiddleware, verifyAdmin,
     paramsIdValidatorMiddleware,
     async (req: RequestWithParams<URIParamsId>, res) => {
     const validation = validationResult(req)
     if (!validation.isEmpty()) {
         res.status(HTTP_CODES.BAD_REQUEST_400).send({errors: validation.array()})
-    }
-    if (!req.user?.isAdmin) {
-        res.sendStatus(401)
     }
     let isDeleted = await gamesService.DeleteGame(+req.params.id)
     if (isDeleted) {
@@ -139,7 +130,7 @@ GamesRouter.delete('/:id', authMiddleware,
 })
 
 GamesRouter.put('/:id',
-    authMiddleware,
+    authMiddleware, verifyAdmin,
     paramsIdValidatorMiddleware,
     gameDataInputValidatorMiddleware,
     async (req: RequestWithParamsAndBody<URIParamsId, UpdateGameInputModel>,
@@ -147,9 +138,6 @@ GamesRouter.put('/:id',
         const validation = validationResult(req)
     if (!validation.isEmpty()) {
         res.status(HTTP_CODES.BAD_REQUEST_400).send({errors: validation.array()})
-    }
-    if (!req.user?.isAdmin) {
-        res.sendStatus(401)
     }
     const UpdatedGame = await gamesService.UpdateGame(+req.params.id, req.body.title, 
             req.body.genre,
