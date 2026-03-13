@@ -1,6 +1,8 @@
-import { UserViewModel } from "../models/UserViewModel"
 import { UserRepository } from "../repositories/user-db-repository"
 import bcrypt from "bcrypt"
+import crypto from 'crypto';
+import { emailAdapter } from "../adapters/email-adapter";
+
 
 const SaltRounds = 10
 
@@ -12,9 +14,14 @@ export const UserService = {
             login: login,
             email: email,
             passwordHash: passwordHash,
-            isAdmin: false
+            isAdmin: false,
+            emailVerification: {
+                isConfirmed: false,
+                confirmationCode: crypto.randomUUID()
+            }
             }
         await UserRepository.CreateNewUser(newUser)
+        emailAdapter.sendConfirmationCode(newUser.email, newUser.emailVerification.confirmationCode, newUser.id)
         let CreatedUser = await UserRepository.FindUserByLogin(newUser.login)
         return CreatedUser
     },
@@ -43,5 +50,18 @@ export const UserService = {
     
     async checkCredentials (enteredPassword: string, hash: string) {
         return await bcrypt.compare(enteredPassword, hash)
+    },
+
+    async confirmEmail(userId: number, confirmationCode: string) {
+        const userInfo = await UserRepository.findUserById(userId)
+        if (!userInfo || !userInfo.emailVerification) {
+            return false
+        }
+        if (userInfo.emailVerification.confirmationCode === confirmationCode) {
+            const result = await UserRepository.updateEmailConfirmationStatus(userId)
+            return result
+        } else {
+            return null
+        }
     }
 }

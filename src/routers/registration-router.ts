@@ -10,6 +10,14 @@ import { UserService } from "../business/user-business-layer"
 export const RegistrationRouter =  Router({})
 
 
+RegistrationRouter.get('/confirmEmail/:confirmationCode', async(req: any, res)=> {
+    const result = await UserService.confirmEmail(+req.query.userId, req.params.confirmationCode)
+    if (result) {
+        res.redirect('/login')
+    } else {
+        res.status(400).send('Невірний або прострочений код підтвердження')
+    }
+})
 
 RegistrationRouter.get('/', 
     (req, res) => {

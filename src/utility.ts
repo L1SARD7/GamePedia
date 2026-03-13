@@ -7,4 +7,6 @@ export let HTTP_CODES = {
     NOT_FOUND_404: 404
 }
 
-export const JWT_Secret = process.env.JWT_Secret || "123"
+export const JWT_Secret = process.env.JWT_SECRET || "123"
+
+export const GOOGLE_APP_PASSWORD = 'oxxn jwvb ciej fdqi'  
