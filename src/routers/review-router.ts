@@ -41,7 +41,7 @@ ReviewRouter.post('/:id', authMiddleware,
                 // @ts-ignore
                 if (req.user) {
                     // @ts-ignore
-                    const CreatedReview = await reviewService.CreateNewReview(req.body.rating, req.body.text, +req.params.id, req.user.id, req.user.username)
+                    const CreatedReview = await reviewService.CreateNewReview(+req.body.rating, req.body.text, +req.params.id, req.user.id, req.user.username)
                     if (CreatedReview) {
                         await gamesService.UpdateAvgRating(+req.params.id)
                         res.status(HTTP_CODES.Created_201).redirect(`/games/${req.params.id}`)
@@ -94,7 +94,7 @@ ReviewRouter.put('/:id', authMiddleware,
         // @ts-ignore
         if (req.user && isExist) {
             // @ts-ignore
-            const changedReview = await reviewService.ChangeReview(+req.params.id, req.body.rating, req.body.text)
+            const changedReview = await reviewService.ChangeReview(+req.params.id, +req.body.rating, req.body.text)
             if (changedReview) {
                 await gamesService.UpdateAvgRating(isExist.gameId)
                 res.status(HTTP_CODES.Created_201).redirect(req.body.returnTo)

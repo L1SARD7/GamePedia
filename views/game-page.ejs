@@ -21,7 +21,7 @@
     <span class="game-rating-label">Оцінка GamePedia</span>
     <span class="game-rating-main">
       <span class="star">&#9733;</span>
-      <%= game.avgRating ? game.avgRating : '—' %>/10
+      <%= (game.avgRating !== null) ? game.avgRating : '—' %>/10
     </span>
   </div>
   <div class="game-rating-block">
@@ -112,7 +112,7 @@
                     <input type="hidden" name="returnTo" value="/games/<%= game.id %>">
                     <label>
                         Оцінка (1-10):<br>
-                        <input type="number" name="rating" min="1" max="10" required>
+                        <input type="number" name="rating" min="0" max="10" required>
                     </label>
                     <br>
                     <label>

@@ -48,7 +48,8 @@ export const gamesService = {
             description: description,
             imageURL: imageURL,
             trailerYoutubeId: trailerYoutubeId,
-            bannerURL: bannerURL
+            bannerURL: bannerURL,
+            avgRating: null
         }
         await GamesRepository.CreateNewGame(newGame)
         const CreatedGame = await GamesRepository.GetGameByID(newGame.id)
@@ -76,10 +77,14 @@ export const gamesService = {
     async UpdateAvgRating(id: number) {
         const Reviews = await reviewService.GetReviews(id, null) || []
         const ratings = Reviews.map(r => Number(r.rating)).filter(r => !isNaN(r));
-        const updatedAvgRating = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
-        const newData = {
-            avgRating: updatedAvgRating
+        let newAvgRating = null
+        if (ratings.length !== 0) {
+            const updatedAvgRating = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
+            newAvgRating = Number(updatedAvgRating)
         }
+        const newData = {
+            avgRating: newAvgRating
+        } 
         return await GamesRepository.UpdateGame(id, newData)
     }
 }
