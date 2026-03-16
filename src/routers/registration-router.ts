@@ -30,27 +30,39 @@ RegistrationRouter.post('/',
     bodyPasswordValidatorMiddleware,
     async (req: RequestWithBody<RegistrationInputModel>, res) => {
     const validation = validationResult(req)
-    if (validation.isEmpty()) {
+    const formData = {
+        login: req.body.login,
+        email: req.body.email
+    }
+    if (!validation.isEmpty()) {
+        return res.status(HTTP_CODES.BAD_REQUEST_400).render('registration', {
+                errors: validation.mapped(),
+                formData: formData
+            })}
         if (req.body.password !== req.body.repeatPassword) {
-            res.status(HTTP_CODES.BAD_REQUEST_400).send('Паролі не співпадають')
+            return res.status(HTTP_CODES.BAD_REQUEST_400).render('registration', { 
+                errors: { repeatPassword: { msg: 'Паролі не співпадають' } },
+                formData: formData
+            })
         }
-        else {
+
         const exist = await UserRepository.FindUserByLogin(req.body.login)
-        if (!exist) {
-            const CreatedUser = await UserService.CreateNewUser(req.body.login, req.body.email, req.body.password)
+        if (exist) {
+            return res.status(HTTP_CODES.BAD_REQUEST_400).render('registration', {errors: {login: {msg: 'Користувач з таким логіном вже існує'}},
+                formData: formData
+  
+            })
+        }
+        const CreatedUser = await UserService.CreateNewUser(req.body.login, req.body.email, req.body.password)
             if (CreatedUser) {
-                res.status(HTTP_CODES.Created_201).redirect('/profile')
+                return res.status(HTTP_CODES.Created_201).render('registration', {successMessage: 'Акаунт успішно створений, щоб активувати його перейдіть за посиланням, яке було надіслано на вашу електонну пошту.'}) 
             } 
             else {
-                res.sendStatus(HTTP_CODES.BAD_REQUEST_400)
+                return res.status(HTTP_CODES.BAD_REQUEST_400).render('registration', {
+                    globalError: 'Сталася помилка при створенні акаунту. Спробуйте пізніше.',
+                    formData: formData
+                }
+                )
             }   
-        }
-        else {
-            res.status(HTTP_CODES.BAD_REQUEST_400).send('Користувач з таким логіном вже існує')
-        }
     }
-}
-else {
-    res.status(HTTP_CODES.BAD_REQUEST_400).send({errors: validation.array()})
-}
-})
+)

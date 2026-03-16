@@ -2,41 +2,77 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Увійти</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Реєстрація</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 <%- include('../Templates/header'); -%>
 <main class="main">
     <h1>Реєстрація</h1>
-    <form class="auth-form" action="/registration" method="post">
-        <label>
-            Логін:<br>
-            <input type="text" name="login" required>
-        </label>
-        <br>
-        <label>
-            Email:<br>
-            <input type="email" name="email" required>
-        </label>
-        <br>
-        <label>
-            Пароль:<br>
-            <input type="password" name="password" required>
-        </label>
-        <br>
-        <label>
-            Повторіть пароль:<br>
-            <input type="password" name="repeatPassword" required>
-        </label>
-        <br>
-        <button type="submit" class="btn">Зареєструватись</button>
-    </form>
-    <div style="margin-top:12px;">
-        Вже є акаунт? <a href="/login">Увійти</a>
-    </div>
-</main>
-<script src=""></script>
 
+    <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+        <div class="success-message">
+            <h3>Майже готово!</h3>
+            <p><%= successMessage %></p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/login" class="btn">Перейти до входу</a>
+        </div>
+        
+    <% } else { %>
+        
+        <% if (typeof globalError !== 'undefined' && globalError) { %>
+            <div class="global-error">
+                <%= globalError %>
+            </div>
+        <% } %>
+
+        <form class="auth-form" action="/registration" method="post">
+            <label>
+                Логін:<br>
+                <input type="text" name="login" value="<%= typeof formData !== 'undefined' ? formData.login : '' %>" required>
+                <% if (typeof errors !== 'undefined' && errors.login) { %>
+                    <div class="field-error"><%= errors.login.msg %></div>
+                <% } %>
+            </label>
+            <br>
+            
+            <label>
+                Email:<br>
+                <input type="email" name="email" value="<%= typeof formData !== 'undefined' ? formData.email : '' %>" required>
+                <% if (typeof errors !== 'undefined' && errors.email) { %>
+                    <div class="field-error"><%= errors.email.msg %></div>
+                <% } %>
+            </label>
+            <br>
+            
+            <label>
+                Пароль:<br>
+                <input type="password" name="password" required>
+                <% if (typeof errors !== 'undefined' && errors.password) { %>
+                    <div class="field-error"><%= errors.password.msg %></div>
+                <% } %>
+            </label>
+            <br>
+            
+            <label>
+                Повторіть пароль:<br>
+                <input type="password" name="repeatPassword" required>
+                <% if (typeof errors !== 'undefined' && errors.repeatPassword) { %>
+                    <div class="field-error"><%= errors.repeatPassword.msg %></div>
+                <% } %>
+            </label>
+            <br>
+            
+            <button type="submit" class="btn">Зареєструватись</button>
+        </form>
+        
+        <div class="auth-redirect">
+        Вже є акаунт? <a href="/login">Увійти</a>
+        </div>
+    <% } %>
+</main>
+
+<script src="/js/main.js"></script>
 </body>
 </html>
