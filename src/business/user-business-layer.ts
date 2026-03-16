@@ -31,11 +31,15 @@ export const UserService = {
         if (user) {
             const vereficationResult = await this.checkCredentials(password, user.passwordHash)
             if (vereficationResult) {
-                const authorizatedUser = {
-                    id: user.id, username: user.login, email: user.email, isAdmin: user.isAdmin
+                if (user.emailVerification.isConfirmed) {
+                    const authorizatedUser = {
+                        id: user.id, username: user.login, email: user.email, isAdmin: user.isAdmin
+                    }
+                    return authorizatedUser
+                } else {
+                    return 'unconfirmed email'
                 }
-                return authorizatedUser
-            } else null
+            } else return null
         } 
         else {
             return null
@@ -49,7 +53,11 @@ export const UserService = {
     },
     
     async checkCredentials (enteredPassword: string, hash: string) {
-        return await bcrypt.compare(enteredPassword, hash)
+        try {
+            return await bcrypt.compare(enteredPassword, hash)
+        } catch {
+            return false
+        }
     },
 
     async confirmEmail(userId: number, confirmationCode: string) {
