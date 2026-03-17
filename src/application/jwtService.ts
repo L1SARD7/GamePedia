@@ -1,7 +1,7 @@
 import { UserViewModel } from "../models/UserViewModel";
 import jwt, { JwtPayload } from "jsonwebtoken"
-import { JWT_Secret } from "../utility";
 
+const JWT_Secret = process.env.JWT_SECRET || '124'
 
 export const jwtService = {
     async createJWT (user: any) {
@@ -12,6 +12,7 @@ export const jwtService = {
             isAdmin: user.isAdmin
         }
         
+        console.log(JWT_Secret)
         const token = jwt.sign(payload, JWT_Secret, {expiresIn: '6h'})
         return token
     },
