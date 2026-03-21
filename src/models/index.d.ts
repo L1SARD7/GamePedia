@@ -1,10 +1,9 @@
-import { UserInfoModel } from "./UserViewModel";
-
+import { UserInfoModel } from './UserViewModel';
 
 declare global {
-  namespace Express {
-    export interface Request {
-      user: UserInfoModel | null;
+    namespace Express {
+        export interface Request {
+            user: UserInfoModel | null;
+        }
     }
-  }
 }

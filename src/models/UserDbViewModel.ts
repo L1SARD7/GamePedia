@@ -1,11 +1,11 @@
 export type UserDbModel = {
-    id: number,
-    login: string,
-    email: string,
-    passwordHash: string,
-    isAdmin: boolean
+    id: number;
+    login: string;
+    email: string;
+    passwordHash: string;
+    isAdmin: boolean;
     emailVerification: {
-        isConfirmed: boolean,
-        confirmationCode: string
-    }
-}
+        isConfirmed: boolean;
+        confirmationCode: string;
+    };
+};

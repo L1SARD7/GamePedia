@@ -1,26 +1,25 @@
-import { NextFunction, Request, Response } from "express"
-import { jwtService } from "../application/jwtService"
+import { NextFunction, Request, Response } from 'express';
+import { jwtService } from '../application/jwtService';
 
-
-
-
-export const authMiddleware = async (req: Request<any, any, any, any>, res: Response, next: NextFunction) => {
+export const authMiddleware = async (
+    req: Request<any, any, any, any>,
+    res: Response,
+    next: NextFunction,
+) => {
     if (req.user) {
-        return next()
+        return next();
     }
 
     if (!req.cookies.accessToken) {
-        return res.redirect('/login')
+        return res.redirect('/login');
     }
 
-    const userInfo = await jwtService.getUserInfoByToken(req.cookies.accessToken)
+    const userInfo = await jwtService.getUserInfoByToken(req.cookies.accessToken);
     if (userInfo) {
         //@ts-ignore
-        req.user = userInfo
-        return next() 
+        req.user = userInfo;
+        return next();
     }
-    res.clearCookie('accessToken')
-    res.redirect('/login')
-    
-
-}
+    res.clearCookie('accessToken');
+    res.redirect('/login');
+};

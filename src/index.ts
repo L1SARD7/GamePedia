@@ -1,15 +1,14 @@
-import dotenv from 'dotenv'; 
-dotenv.config()
-import { app } from './app'
-import { runDB } from './db/db'
+import dotenv from 'dotenv';
+dotenv.config();
+import { app } from './app';
+import { runDB } from './db/db';
 
-
-let PORT = process.env.PORT || 1235
+const PORT = process.env.PORT || 1235;
 const StartAPI = async () => {
-    runDB()
+    runDB();
     app.listen(PORT, () => {
-        console.log('Server started!')
-    })
-}
+        console.log('Server started!');
+    });
+};
 
-StartAPI()
+StartAPI();
