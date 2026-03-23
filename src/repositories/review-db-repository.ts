@@ -6,11 +6,11 @@ export const ReviewRepository = {
         return await client.db('GamePedia').collection('reviews').find(filter).toArray();
     },
 
-    async FindReviewByUserId(id: object) {
+    async FindReviewByUserId(id: number) {
         return await client.db('GamePedia').collection('reviews').find({ authorId: id });
     },
 
-    async FindReviewByReviewId(id: object) {
+    async FindReviewByReviewId(id: number) {
         return await client.db('GamePedia').collection('reviews').findOne({ id: id });
     },
 

@@ -8,7 +8,7 @@ export type UserViewModel = {
 
 export type UserInfoModel = {
     id: number;
-    login: string;
+    username: string;
     email: string;
     isAdmin: boolean;
 };
