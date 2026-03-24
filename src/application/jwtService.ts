@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import { config } from '../config';
 
-const JWT_Secret = process.env.JWT_SECRET || '124';
+const JWT_Secret = config.JWT_SECRET;
 
 export const jwtService = {
     async createJWT(user: any) {
@@ -10,8 +11,6 @@ export const jwtService = {
             userEmail: user.email,
             isAdmin: user.isAdmin,
         };
-
-        console.log(JWT_Secret);
         const token = jwt.sign(payload, JWT_Secret, { expiresIn: '6h' });
         return token;
     },

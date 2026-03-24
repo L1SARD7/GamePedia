@@ -1,9 +1,8 @@
-import dotenv from 'dotenv';
-dotenv.config();
 import { app } from './app';
 import { runDB } from './db/db';
+import { config } from './config';
 
-const PORT = process.env.PORT || 1235;
+const PORT = config.PORT;
 const StartAPI = async () => {
     runDB();
     app.listen(PORT, () => {

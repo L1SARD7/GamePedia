@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb';
+import { config } from '../config';
 
-const MongoURI = process.env.MongoURI || 'mongodb://0.0.0.0:27016';
+const MongoURI = config.MONGO_URI;
 
 export const client = new MongoClient(MongoURI);
 
