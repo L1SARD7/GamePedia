@@ -25,10 +25,7 @@ import { verifyAdmin } from '../validator/verify-admin-middleware';
 export const GamesRouter = Router({});
 
 GamesRouter.get('/add', authMiddleware, verifyAdmin, async (req: any, res: any) => {
-    if (!req.user || !req.user.isAdmin) {
-        return res.status(HTTP_CODES.Unauthorized_401).send('Доступ лише для адміністратора');
-    }
-    res.render('create-new-game');
+    res.status(HTTP_CODES.OK_200).render('create-new-game');
 });
 
 GamesRouter.post(
@@ -40,6 +37,7 @@ GamesRouter.post(
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+            return;
         }
         const CreatedGame = await gamesService.CreateNewGame(
             req.body.title,
@@ -52,11 +50,11 @@ GamesRouter.post(
             req.body.bannerURL,
         );
 
-        if (CreatedGame) {
-            return res.status(HTTP_CODES.Created_201).redirect(`/games/${CreatedGame.id}`);
-        } else {
+        if (!CreatedGame) {
             res.sendStatus(HTTP_CODES.BAD_REQUEST_400);
+            return;
         }
+        res.redirect(`/games/${CreatedGame.id}`);
     },
 );
 
@@ -64,13 +62,9 @@ GamesRouter.get('/list', queryTitleValidatorMiddleware, async (req: any, res) =>
     const validation = validationResult(req);
     if (req.query.title && !validation.isEmpty()) {
         res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+        return;
     }
-    let gamesList;
-    if (req.query.title) {
-        gamesList = await gamesService.FindGamesByTitle(req.query.title);
-    } else {
-        gamesList = await gamesService.GetAllGames();
-    }
+    const gamesList = await gamesService.GetGamesByFilter(req.query.title, null);
     res.render('games-list', { games: gamesList });
 });
 
@@ -82,9 +76,10 @@ GamesRouter.get(
         const validation = validationResult(req);
         if (req.query.title && req.query.genre && !validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+            return;
         }
         const SortedGames = await gamesService.GetGamesByFilter(req.query.title, req.query.genre);
-        res.json(SortedGames).status(HTTP_CODES.OK_200);
+        res.status(HTTP_CODES.OK_200).json(SortedGames);
     },
 );
 
@@ -95,17 +90,18 @@ GamesRouter.get(
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+            return;
         }
         const FoundGame = await gamesService.GetGameByID(+req.params.id);
-        const Reviews = await reviewService.GetReviews(+req.params.id, null);
-        if (FoundGame) {
-            res.status(HTTP_CODES.OK_200).render('game-page', {
-                game: FoundGame,
-                reviews: Reviews,
-            });
-        } else {
-            res.sendStatus(HTTP_CODES.BAD_REQUEST_400);
+        if (!FoundGame) {
+            res.sendStatus(HTTP_CODES.NOT_FOUND_404);
+            return;
         }
+        const Reviews = await reviewService.GetReviews(+req.params.id, null);
+        res.status(HTTP_CODES.CREATED_201).render('game-page', {
+            game: FoundGame,
+            reviews: Reviews,
+        });
     },
 );
 
@@ -118,13 +114,14 @@ GamesRouter.get(
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+            return;
         }
         const SelectedGame = await gamesService.GetGameByID(+req.params.id);
-        if (SelectedGame) {
-            res.status(HTTP_CODES.OK_200).render('edit-game', { game: SelectedGame, error: null });
-        } else {
-            res.sendStatus(HTTP_CODES.BAD_REQUEST_400);
+        if (!SelectedGame) {
+            res.sendStatus(HTTP_CODES.NOT_FOUND_404);
+            return;
         }
+        res.status(HTTP_CODES.OK_200).render('edit-game', { game: SelectedGame, error: null });
     },
 );
 
@@ -137,13 +134,14 @@ GamesRouter.delete(
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+            return;
         }
         const isDeleted = await gamesService.DeleteGame(+req.params.id);
-        if (isDeleted) {
-            res.status(HTTP_CODES.Deleted_204).redirect('/');
-        } else {
-            res.sendStatus(HTTP_CODES.BAD_REQUEST_400);
+        if (!isDeleted) {
+            res.sendStatus(HTTP_CODES.NOT_FOUND_404);
+            return;
         }
+        res.redirect('/');
     },
 );
 
@@ -157,6 +155,7 @@ GamesRouter.put(
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+            return;
         }
         const UpdatedGame = await gamesService.UpdateGame(
             +req.params.id,
@@ -169,10 +168,10 @@ GamesRouter.put(
             req.body.trailerYoutubeId,
             req.body.bannerURL,
         );
-        if (UpdatedGame) {
-            res.status(HTTP_CODES.OK_200).redirect(`/games/${req.params.id}`);
-        } else {
-            res.sendStatus(HTTP_CODES.BAD_REQUEST_400);
+        if (!UpdatedGame) {
+            res.sendStatus(HTTP_CODES.NOT_FOUND_404);
+            return;
         }
+        res.redirect(`/games/${req.params.id}`);
     },
 );

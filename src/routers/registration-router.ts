@@ -15,15 +15,15 @@ export const RegistrationRouter = Router({});
 
 RegistrationRouter.get('/confirmEmail/:confirmationCode', async (req: any, res) => {
     const result = await UserService.confirmEmail(+req.query.userId, req.params.confirmationCode);
-    if (result) {
-        res.redirect('/login');
-    } else {
+    if (!result) {
         res.status(400).send('Невірний або прострочений код підтвердження');
+        return;
     }
+    res.redirect('/login');
 });
 
 RegistrationRouter.get('/', (req, res) => {
-    res.render('registration');
+    res.status(HTTP_CODES.OK_200).render('registration');
 });
 
 RegistrationRouter.post(
@@ -62,16 +62,15 @@ RegistrationRouter.post(
             req.body.email,
             req.body.password,
         );
-        if (CreatedUser) {
-            return res.status(HTTP_CODES.Created_201).render('registration', {
-                successMessage:
-                    'Акаунт успішно створений, щоб активувати його перейдіть за посиланням, яке було надіслано на вашу електонну пошту.',
-            });
-        } else {
+        if (!CreatedUser) {
             return res.status(HTTP_CODES.BAD_REQUEST_400).render('registration', {
                 globalError: 'Сталася помилка при створенні акаунту. Спробуйте пізніше.',
                 formData: formData,
             });
         }
+        res.status(HTTP_CODES.CREATED_201).render('registration', {
+            successMessage:
+                'Акаунт успішно створений, щоб активувати його перейдіть за посиланням, яке було надіслано на вашу електонну пошту.',
+        });
     },
 );

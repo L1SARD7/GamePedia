@@ -14,7 +14,7 @@ import { config } from '../config';
 export const LoginRouter = Router({});
 
 LoginRouter.get('/', (req, res) => {
-    res.render('login');
+    res.status(HTTP_CODES.OK_200).render('login');
 });
 
 LoginRouter.post(
@@ -23,34 +23,31 @@ LoginRouter.post(
     bodyPasswordValidatorMiddleware,
     async (req: RequestWithBody<LoginInputModel>, res) => {
         const validation = validationResult(req);
-        if (validation.isEmpty()) {
-            const user = await UserService.authorizationUser(req.body.login, req.body.password);
-            if (user !== null) {
-                if (user === 'unconfirmed email') {
-                    res.render('login', {
-                        errorMessage:
-                            'Для входу в акаунт підвердіть свою електронну адресу. Підтвердження було надіслано на ваш email, вказаний при реєстрації',
-                    });
-                }
-                if (user) {
-                    // @ts-ignore
-                    const token = await jwtService.createJWT(user);
-                    // @ts-ignore
-                    res.cookie('accessToken', token, {
-                        httpOnly: true,
-                        secure: config.NODE_ENV === 'production',
-                        sameSite: 'lax',
-                        maxAge: config.TOKEN_EXPIRATION_TIME,
-                    });
-                    res.status(201).redirect('/profile');
-                }
-            } else {
-                res.status(HTTP_CODES.BAD_REQUEST_400).render('login', {
-                    errorMessage: 'Неправильний логін або пароль',
-                });
-            }
-        } else {
+        if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+            return;
         }
+        const user = await UserService.authorizationUser(req.body.login, req.body.password);
+        if (user === null) {
+            res.status(HTTP_CODES.BAD_REQUEST_400).render('login', {
+                errorMessage: 'Неправильний логін або пароль',
+            });
+            return;
+        }
+        if (user === 'unconfirmed email') {
+            res.status(HTTP_CODES.FORBIDDEN_403).render('login', {
+                errorMessage:
+                    'Для входу в акаунт підвердіть свою електронну адресу. Підтвердження було надіслано на ваш email, вказаний при реєстрації',
+            });
+            return;
+        }
+        const token = await jwtService.createJWT(user);
+        res.cookie('accessToken', token, {
+            httpOnly: true,
+            secure: config.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: config.TOKEN_EXPIRATION_TIME,
+        });
+        res.redirect('/profile');
     },
 );
