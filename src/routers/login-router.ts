@@ -9,6 +9,7 @@ import { validationResult } from 'express-validator';
 import { HTTP_CODES } from '../utility';
 import { UserService } from '../business/user-business-layer';
 import { jwtService } from '../application/jwtService';
+import { config } from '../config';
 
 export const LoginRouter = Router({});
 
@@ -37,6 +38,9 @@ LoginRouter.post(
                     // @ts-ignore
                     res.cookie('accessToken', token, {
                         httpOnly: true,
+                        secure: config.NODE_ENV === 'production',
+                        sameSite: 'lax',
+                        maxAge: config.TOKEN_EXPIRATION_TIME,
                     });
                     res.status(201).redirect('/profile');
                 }

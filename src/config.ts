@@ -18,4 +18,6 @@ export const config = {
         USER: getEnvVar('GOOGLE_APP_USER'),
         PASSWORD: getEnvVar('GOOGLE_APP_PASSWORD'),
     },
+    NODE_ENV: process.env.NODE_ENV || 'development',
+    TOKEN_EXPIRATION_TIME: 6 * 60 * 60 * 1000,
 };
