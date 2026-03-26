@@ -31,24 +31,23 @@ export const UserService = {
 
     async authorizationUser(login: string, password: string) {
         const user = await UserRepository.FindUserByLogin(login);
-        if (user) {
-            const vereficationResult = await this.checkCredentials(password, user.passwordHash);
-            if (vereficationResult) {
-                if (user.emailVerification.isConfirmed) {
-                    const authorizatedUser = {
-                        id: user.id,
-                        username: user.login,
-                        email: user.email,
-                        isAdmin: user.isAdmin,
-                    };
-                    return authorizatedUser;
-                } else {
-                    return 'unconfirmed email';
-                }
-            } else return null;
-        } else {
+        if (!user) {
             return null;
         }
+        const vereficationResult = await this.checkCredentials(password, user.passwordHash);
+        if (!vereficationResult) {
+            return null;
+        }
+        if (user.emailVerification.isConfirmed === false) {
+            return 'unconfirmed email';
+        }
+        const authorizatedUser = {
+            id: user.id,
+            username: user.login,
+            email: user.email,
+            isAdmin: user.isAdmin,
+        };
+        return authorizatedUser;
     },
 
     async encodePassword(password: string) {
@@ -70,11 +69,10 @@ export const UserService = {
         if (!userInfo || !userInfo.emailVerification) {
             return false;
         }
-        if (userInfo.emailVerification.confirmationCode === confirmationCode) {
-            const result = await UserRepository.updateEmailConfirmationStatus(userId);
-            return result;
-        } else {
+        if (userInfo.emailVerification.confirmationCode !== confirmationCode) {
             return null;
         }
+        const result = await UserRepository.updateEmailConfirmationStatus(userId);
+        return result;
     },
 };

@@ -3,18 +3,14 @@ import { ReviewRepository } from '../repositories/review-db-repository';
 
 export const reviewService = {
     async GetReviews(gameId: number | null, authorId: number | null) {
-        if (gameId || authorId) {
-            const filter: any = {};
-            if (gameId) {
-                filter.gameId = gameId;
-            }
-            if (authorId) {
-                filter.authorId = authorId;
-            }
-            return await ReviewRepository.FindReviews(filter);
-        } else {
-            return false;
+        const filter: any = {};
+        if (gameId) {
+            filter.gameId = gameId;
         }
+        if (authorId) {
+            filter.authorId = authorId;
+        }
+        return await ReviewRepository.FindReviews(filter);
     },
 
     async GetReviewById(id: number) {
@@ -54,10 +50,9 @@ export const reviewService = {
             text: text,
         };
         const result = await ReviewRepository.ChangeReview(reviewId, newData);
-        if (result) {
-            return await ReviewRepository.FindReviewByReviewId(reviewId);
-        } else {
+        if (!result) {
             return null;
         }
+        return await ReviewRepository.FindReviewByReviewId(reviewId);
     },
 };

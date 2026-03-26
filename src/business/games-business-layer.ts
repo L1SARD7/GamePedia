@@ -5,7 +5,7 @@ export const gamesService = {
     async GetGamesByFilter(title: string | null, genre: string | null) {
         const filter: any = {};
         if (title) {
-            filter.title = title;
+            filter.title = { $regex: title, $options: 'i' };
         }
         if (genre) {
             filter.genre = genre;
