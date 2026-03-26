@@ -75,9 +75,13 @@ ReviewRouter.delete(
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const isExist: any = await reviewService.GetReviewById(+req.params.id);
+        const isExist = await reviewService.GetReviewById(+req.params.id);
         if (!isExist) {
             res.status(HTTP_CODES.NOT_FOUND_404).send('Такого відгуку не існує.');
+            return;
+        }
+        if (req.user?.id !== isExist.authorId) {
+            res.status(HTTP_CODES.FORBIDDEN_403).send('Ви не маєте права видалити чужий відгук.');
             return;
         }
         const isDeleted = await reviewService.DeleteReview(+req.params.id);
@@ -109,7 +113,11 @@ ReviewRouter.put(
             return;
         }
         if (!isExist) {
-            res.status(HTTP_CODES.NOT_FOUND_404).send('');
+            res.status(HTTP_CODES.NOT_FOUND_404).send('Відгук не знайдено.');
+            return;
+        }
+        if (req.user?.id !== isExist.authorId) {
+            res.status(HTTP_CODES.FORBIDDEN_403).send('Ви не маєте права редагувати чужий відгук.');
             return;
         }
         const changedReview = await reviewService.ChangeReview(
