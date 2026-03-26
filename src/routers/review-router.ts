@@ -17,7 +17,10 @@ export const ReviewRouter = Router({});
 
 ReviewRouter.get('/', async (req, res) => {
     if (!req.query.gameId && !req.query.authorId) {
-        res.sendStatus(HTTP_CODES.BAD_REQUEST_400);
+        res.status(HTTP_CODES.BAD_REQUEST_400).json({
+            error: 'Bad Request',
+            message: 'Missing required query parameters: gameId or authorId',
+        });
         return;
     }
     const SortedReviews = await reviewService.GetReviews(
@@ -86,11 +89,13 @@ ReviewRouter.delete(
         }
         const isDeleted = await reviewService.DeleteReview(+req.params.id);
         if (!isDeleted) {
-            res.status(HTTP_CODES.BAD_REQUEST_400);
+            res.status(HTTP_CODES.INTERNAL_SERVER_ERROR_500).send(
+                'Не вдалося видалити відгук. Спробуйте пізніше.',
+            );
             return;
         }
         await gamesService.UpdateAvgRating(isExist.gameId);
-        res.status(HTTP_CODES.DELETED_204).redirect(req.body.returnTo);
+        res.redirect(req.body.returnTo);
     },
 );
 
@@ -105,7 +110,7 @@ ReviewRouter.put(
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const isExist: any = await reviewService.GetReviewById(+req.params.id);
+        const isExist = await reviewService.GetReviewById(+req.params.id);
         if (!req.user) {
             res.status(HTTP_CODES.UNAUTHORIZED_401).send(
                 'Для того, щоб залишити відгук, необхідно бути авторизованим.',
@@ -126,10 +131,12 @@ ReviewRouter.put(
             req.body.text,
         );
         if (!changedReview) {
-            res.status(HTTP_CODES.BAD_REQUEST_400);
+            res.status(HTTP_CODES.INTERNAL_SERVER_ERROR_500).send(
+                'Не вдалося оновити відгук. Перевірте дані та спробуйте ще раз.',
+            );
             return;
         }
         await gamesService.UpdateAvgRating(isExist.gameId);
-        res.status(HTTP_CODES.CREATED_201).redirect(req.body.returnTo);
+        res.redirect(req.body.returnTo);
     },
 );

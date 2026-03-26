@@ -98,7 +98,7 @@ GamesRouter.get(
             return;
         }
         const Reviews = await reviewService.GetReviews(+req.params.id, null);
-        res.status(HTTP_CODES.CREATED_201).render('game-page', {
+        res.status(HTTP_CODES.OK_200).render('game-page', {
             game: FoundGame,
             reviews: Reviews,
         });
