@@ -1,3 +1,3 @@
 export type URIParamsId = {
-    id: number;
+    id: string;
 };

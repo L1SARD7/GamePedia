@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { RequestWithBody } from '../models/RequestTypes';
 import { LoginInputModel } from '../models/LoginInputModel';
 import {
@@ -13,7 +13,7 @@ import { config } from '../config';
 
 export const LoginRouter = Router({});
 
-LoginRouter.get('/', (req, res) => {
+LoginRouter.get('/', (req: Request, res: Response) => {
     res.status(HTTP_CODES.OK_200).render('login');
 });
 
@@ -21,7 +21,7 @@ LoginRouter.post(
     '/',
     bodyLoginValidatorMiddleware,
     bodyPasswordValidatorMiddleware,
-    async (req: RequestWithBody<LoginInputModel>, res) => {
+    async (req: RequestWithBody<LoginInputModel>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });

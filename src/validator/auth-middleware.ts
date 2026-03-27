@@ -2,23 +2,25 @@ import { NextFunction, Request, Response } from 'express';
 import { jwtService } from '../application/jwtService';
 
 export const authMiddleware = async (
-    req: Request<any, any, any, any>,
+    req: Request,
     res: Response,
     next: NextFunction,
-) => {
+): Promise<void> => {
     if (req.user) {
-        return next();
+        next();
+        return;
     }
 
     if (!req.cookies.accessToken) {
-        return res.redirect('/login');
+        res.redirect('/login');
+        return;
     }
 
     const userInfo = await jwtService.getUserInfoByToken(req.cookies.accessToken);
     if (userInfo) {
-        //@ts-ignore
         req.user = userInfo;
-        return next();
+        next();
+        return;
     }
     res.clearCookie('accessToken');
     res.redirect('/login');

@@ -1,27 +1,30 @@
 import { client } from '../db/db';
 import { UserDbModel } from '../models/UserDbViewModel';
-import { UserViewModel } from '../models/UserViewModel';
 
 export const UserRepository = {
-    async FindUserByLogin(login: string) {
-        return await client.db('GamePedia').collection('users').findOne({ login: login });
+    async FindUserByLogin(login: string): Promise<UserDbModel | null> {
+        return await client
+            .db('GamePedia')
+            .collection<UserDbModel>('users')
+            .findOne({ login: login });
     },
 
     async findUserById(id: number): Promise<UserDbModel | null> {
-        return (await client
-            .db('GamePedia')
-            .collection('users')
-            .findOne({ id: id })) as UserDbModel | null;
+        return await client.db('GamePedia').collection<UserDbModel>('users').findOne({ id: id });
     },
 
-    async CreateNewUser(newUser: UserViewModel) {
-        return await client.db('GamePedia').collection('users').insertOne(newUser);
-    },
-
-    async updateEmailConfirmationStatus(userId: number) {
+    async CreateNewUser(newUser: UserDbModel): Promise<boolean> {
         const result = await client
             .db('GamePedia')
-            .collection('users')
+            .collection<UserDbModel>('users')
+            .insertOne(newUser);
+        return result.acknowledged;
+    },
+
+    async updateEmailConfirmationStatus(userId: number): Promise<boolean> {
+        const result = await client
+            .db('GamePedia')
+            .collection<UserDbModel>('users')
             .updateOne({ id: userId }, { $set: { 'emailVerification.isConfirmed': true } });
         return result.modifiedCount === 1;
     },

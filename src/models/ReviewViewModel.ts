@@ -6,3 +6,8 @@ export type ReviewViewModel = {
     rating: number;
     text: string;
 };
+
+export type CreateReviewDbModel = ReviewViewModel;
+export type UpdateReviewDbModel = Partial<
+    Omit<ReviewViewModel, 'id' | 'gameId' | 'authorId' | 'authorName'>
+>;

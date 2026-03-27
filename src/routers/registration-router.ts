@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import { RequestWithBody } from '../models/RequestTypes';
+import { Request, Response, Router } from 'express';
+import { RequestWithBody, RequestWithParamsAndQuery } from '../models/RequestTypes';
 import {
     bodyemailValidatorMiddleware,
     bodyLoginValidatorMiddleware,
@@ -13,16 +13,25 @@ import { UserService } from '../business/user-business-layer';
 
 export const RegistrationRouter = Router({});
 
-RegistrationRouter.get('/confirmEmail/:confirmationCode', async (req: any, res) => {
-    const result = await UserService.confirmEmail(+req.query.userId, req.params.confirmationCode);
-    if (!result) {
-        res.status(400).send('Невірний або прострочений код підтвердження');
-        return;
-    }
-    res.redirect('/login');
-});
+RegistrationRouter.get(
+    '/confirmEmail/:confirmationCode',
+    async (
+        req: RequestWithParamsAndQuery<{ confirmationCode: string }, { userId: string }>,
+        res: Response,
+    ) => {
+        const result = await UserService.confirmEmail(
+            +req.query.userId,
+            req.params.confirmationCode,
+        );
+        if (!result) {
+            res.status(400).send('Невірний або прострочений код підтвердження');
+            return;
+        }
+        res.redirect('/login');
+    },
+);
 
-RegistrationRouter.get('/', (req, res) => {
+RegistrationRouter.get('/', (req: Request, res: Response) => {
     res.status(HTTP_CODES.OK_200).render('registration');
 });
 
@@ -31,7 +40,7 @@ RegistrationRouter.post(
     bodyLoginValidatorMiddleware,
     bodyemailValidatorMiddleware,
     bodyPasswordValidatorMiddleware,
-    async (req: RequestWithBody<RegistrationInputModel>, res) => {
+    async (req: RequestWithBody<RegistrationInputModel>, res: Response) => {
         const validation = validationResult(req);
         const formData = {
             login: req.body.login,

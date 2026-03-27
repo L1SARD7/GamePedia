@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { RequestWithParams, RequestWithParamsAndBody } from '../models/RequestTypes';
 import { validationResult } from 'express-validator';
 import { HTTP_CODES } from '../utility';
@@ -15,7 +15,7 @@ import { authMiddleware } from '../validator/auth-middleware';
 
 export const ReviewRouter = Router({});
 
-ReviewRouter.get('/', async (req, res) => {
+ReviewRouter.get('/', async (req: Request, res: Response) => {
     if (!req.query.gameId && !req.query.authorId) {
         res.status(HTTP_CODES.BAD_REQUEST_400).json({
             error: 'Bad Request',
@@ -35,7 +35,7 @@ ReviewRouter.post(
     authMiddleware,
     bodyRatingReviewValidatorMiddleware,
     bodyTextReviewValidatorMiddleware,
-    async (req: RequestWithParamsAndBody<URIParamsId, ReviewInputModel>, res) => {
+    async (req: RequestWithParamsAndBody<URIParamsId, ReviewInputModel>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
@@ -64,7 +64,7 @@ ReviewRouter.post(
             return;
         }
         await gamesService.UpdateAvgRating(+req.params.id);
-        res.status(HTTP_CODES.CREATED_201).redirect(`/games/${req.params.id}`);
+        res.redirect(`/games/${req.params.id}`);
     },
 );
 
@@ -72,7 +72,7 @@ ReviewRouter.delete(
     '/:id',
     authMiddleware,
     paramsIdValidatorMiddleware,
-    async (req: RequestWithParams<URIParamsId>, res) => {
+    async (req: RequestWithParams<URIParamsId>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
@@ -104,7 +104,7 @@ ReviewRouter.put(
     authMiddleware,
     bodyRatingReviewValidatorMiddleware,
     bodyTextReviewValidatorMiddleware,
-    async (req: RequestWithParamsAndBody<URIParamsId, ReviewInputModel>, res) => {
+    async (req: RequestWithParamsAndBody<URIParamsId, ReviewInputModel>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });

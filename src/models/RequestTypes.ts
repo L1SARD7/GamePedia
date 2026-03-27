@@ -1,12 +1,13 @@
 import { Request } from 'express';
 
-export type RequestWithQuerry<T> = Request<{}, {}, {}, T, {}>;
-export type RequestWithParams<T> = Request<T>;
-export type GetGameWithQuerry = {
+export type RequestWithQuery<TQuery> = Request<{}, {}, {}, TQuery, {}>;
+export type RequestWithParams<TParams> = Request<TParams>;
+export type GetGameWithQuery = {
     title: string;
     genre: string;
 };
 
-export type RequestWithBody<T> = Request<{}, {}, T>;
+export type RequestWithBody<TBody> = Request<{}, {}, TBody>;
+export type RequestWithParamsAndQuery<TParams, TQuery> = Request<TParams, {}, {}, TQuery>;
 
-export type RequestWithParamsAndBody<T1, T2> = Request<T1, {}, T2>;
+export type RequestWithParamsAndBody<TParams, TBody> = Request<TParams, {}, TBody>;

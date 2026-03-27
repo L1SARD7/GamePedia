@@ -1,10 +1,10 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import {
-    GetGameWithQuerry,
+    GetGameWithQuery,
     RequestWithBody,
     RequestWithParams,
     RequestWithParamsAndBody,
-    RequestWithQuerry,
+    RequestWithQuery,
 } from '../models/RequestTypes';
 import { CreateGameInputModel } from '../models/CreateGameInputModel';
 import { UpdateGameInputModel } from '../models/UpdateGameInputModel';
@@ -24,7 +24,7 @@ import { verifyAdmin } from '../validator/verify-admin-middleware';
 
 export const GamesRouter = Router({});
 
-GamesRouter.get('/add', authMiddleware, verifyAdmin, async (req: any, res: any) => {
+GamesRouter.get('/add', authMiddleware, verifyAdmin, async (req: Request, res: Response) => {
     res.status(HTTP_CODES.OK_200).render('create-new-game');
 });
 
@@ -58,27 +58,34 @@ GamesRouter.post(
     },
 );
 
-GamesRouter.get('/list', queryTitleValidatorMiddleware, async (req: any, res) => {
-    const validation = validationResult(req);
-    if (req.query.title && !validation.isEmpty()) {
-        res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
-        return;
-    }
-    const gamesList = await gamesService.GetGamesByFilter(req.query.title, null);
-    res.render('games-list', { games: gamesList });
-});
+GamesRouter.get(
+    '/list',
+    queryTitleValidatorMiddleware,
+    async (req: RequestWithQuery<{ title: string }>, res) => {
+        const validation = validationResult(req);
+        if (req.query.title && !validation.isEmpty()) {
+            res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+            return;
+        }
+        const gamesList = await gamesService.GetGamesByFilter(req.query.title ?? null, null);
+        res.render('games-list', { games: gamesList });
+    },
+);
 
 GamesRouter.get(
     '/',
     queryTitleValidatorMiddleware,
     queryGenreValidatorMiddleware,
-    async (req: RequestWithQuerry<GetGameWithQuerry>, res: Response) => {
+    async (req: RequestWithQuery<GetGameWithQuery>, res: Response) => {
         const validation = validationResult(req);
         if (req.query.title && req.query.genre && !validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const SortedGames = await gamesService.GetGamesByFilter(req.query.title, req.query.genre);
+        const SortedGames = await gamesService.GetGamesByFilter(
+            req.query.title ?? null,
+            req.query.genre ?? null,
+        );
         res.status(HTTP_CODES.OK_200).json(SortedGames);
     },
 );
@@ -130,7 +137,7 @@ GamesRouter.delete(
     authMiddleware,
     verifyAdmin,
     paramsIdValidatorMiddleware,
-    async (req: RequestWithParams<URIParamsId>, res) => {
+    async (req: RequestWithParams<URIParamsId>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });

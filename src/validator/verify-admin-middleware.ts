@@ -1,10 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-export const verifyAdmin = async (
-    req: Request<any, any, any, any>,
-    res: Response,
-    next: NextFunction,
-) => {
+export const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
     if (req.user?.isAdmin === true) {
         next();
         return;

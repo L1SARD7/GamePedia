@@ -1,9 +1,11 @@
+import { Filter, Sort } from 'mongodb';
+import { CreateGameDbModel, GameViewModel, UpdateGameDbModel } from '../models/GameViewModel';
 import { GamesRepository } from '../repositories/games-db-repository';
 import { reviewService } from './review-business-layer';
 
 export const gamesService = {
-    async GetGamesByFilter(title: string | null, genre: string | null) {
-        const filter: any = {};
+    async GetGamesByFilter(title: string | null, genre: string | null): Promise<GameViewModel[]> {
+        const filter: Filter<GameViewModel> = {};
         if (title) {
             filter.title = { $regex: title, $options: 'i' };
         }
@@ -13,31 +15,33 @@ export const gamesService = {
         return await GamesRepository.GetGames(filter);
     },
 
-    async FindGamesByTitle(title: string) {
+    async FindGamesByTitle(title: string): Promise<GameViewModel[]> {
         return await GamesRepository.FindGamesByTitle(title);
     },
 
-    async GetAllGames() {
+    async GetAllGames(): Promise<GameViewModel[]> {
         return await GamesRepository.GetAllGames();
     },
 
-    async GetManyGamesByID(gameIds: any) {
+    async GetManyGamesByID(gameIds: number[]): Promise<GameViewModel[]> {
         return await GamesRepository.GetManyGamesByID(gameIds);
     },
 
-    async GetGameByID(id: number) {
+    async GetGameByID(id: number): Promise<GameViewModel | null> {
         return await GamesRepository.GetGameByID(id);
     },
 
-    async GetLatestGames() {
-        return await GamesRepository.GetSortedGames({ id: -1 });
+    async GetLatestGames(): Promise<GameViewModel[]> {
+        const sortMethod: Sort = { id: -1 };
+        return await GamesRepository.GetSortedGames(sortMethod);
     },
 
-    async GetTopRatedGames() {
-        return await GamesRepository.GetSortedGames({ avgRating: -1 });
+    async GetTopRatedGames(): Promise<GameViewModel[]> {
+        const sortMethod: Sort = { avgRating: -1 };
+        return await GamesRepository.GetSortedGames(sortMethod);
     },
 
-    async DeleteGame(id: number) {
+    async DeleteGame(id: number): Promise<boolean> {
         return await GamesRepository.DeleteGame(id);
     },
 
@@ -50,22 +54,21 @@ export const gamesService = {
         imageURL: string,
         trailerYoutubeId: string,
         bannerURL: string,
-    ): Promise<any> {
-        const newGame = {
+    ): Promise<GameViewModel | null> {
+        const newGame: CreateGameDbModel = {
             id: +new Date(),
-            title: title,
-            genre: genre,
-            release_year: release_year,
-            developer: developer,
-            description: description,
-            imageURL: imageURL,
-            trailerYoutubeId: trailerYoutubeId,
-            bannerURL: bannerURL,
+            title,
+            genre,
+            release_year,
+            developer,
+            description,
+            imageURL,
+            trailerYoutubeId,
+            bannerURL,
             avgRating: null,
         };
         await GamesRepository.CreateNewGame(newGame);
-        const CreatedGame = await GamesRepository.GetGameByID(newGame.id);
-        return CreatedGame;
+        return await GamesRepository.GetGameByID(newGame.id);
     },
 
     async UpdateGame(
@@ -78,37 +81,33 @@ export const gamesService = {
         imageURL: string,
         trailerYoutubeId: string,
         bannerURL: string,
-    ) {
-        const newData = {
-            title: title,
-            genre: genre,
-            release_year: release_year,
-            developer: developer,
-            description: description,
-            imageURL: imageURL,
-            trailerYoutubeId: trailerYoutubeId,
-            bannerURL: bannerURL,
+    ): Promise<GameViewModel | null> {
+        const newData: UpdateGameDbModel = {
+            title,
+            genre,
+            release_year,
+            developer,
+            description,
+            imageURL,
+            trailerYoutubeId,
+            bannerURL,
         };
         const result = await GamesRepository.UpdateGame(id, newData);
-        if (result) {
-            return await GamesRepository.GetGameByID(id);
-        } else {
+        if (!result) {
             return null;
         }
+        return await GamesRepository.GetGameByID(id);
     },
-    async UpdateAvgRating(id: number) {
-        const Reviews = (await reviewService.GetReviews(id, null)) || [];
-        const ratings = Reviews.map((r) => Number(r.rating)).filter((r) => !isNaN(r));
-        let newAvgRating = null;
+    async UpdateAvgRating(id: number): Promise<boolean> {
+        const reviews = await reviewService.GetReviews(id, null);
+        const ratings = reviews.map((r) => Number(r.rating)).filter((r) => !isNaN(r));
+        let newAvgRating: GameViewModel['avgRating'] = null;
         if (ratings.length !== 0) {
             const updatedAvgRating = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(
                 1,
             );
             newAvgRating = Number(updatedAvgRating);
         }
-        const newData = {
-            avgRating: newAvgRating,
-        };
-        return await GamesRepository.UpdateGame(id, newData);
+        return await GamesRepository.UpdateGame(id, { avgRating: newAvgRating });
     },
 };

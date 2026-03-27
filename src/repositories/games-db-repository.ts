@@ -1,37 +1,47 @@
+import { Filter, Sort } from 'mongodb';
 import { client } from '../db/db';
-import { GameViewModel } from '../models/GameViewModel';
+import { CreateGameDbModel, GameViewModel, UpdateGameDbModel } from '../models/GameViewModel';
 
 export const GamesRepository = {
-    async GetGames(filter: any) {
-        return await client.db('GamePedia').collection('games').find(filter).toArray();
-    },
-
-    async GetAllGames() {
-        return await client.db('GamePedia').collection('games').find({}).toArray();
-    },
-
-    async FindGamesByTitle(title: string) {
+    async GetGames(filter: Filter<GameViewModel>): Promise<GameViewModel[]> {
         return await client
             .db('GamePedia')
-            .collection('games')
+            .collection<GameViewModel>('games')
+            .find(filter)
+            .toArray();
+    },
+
+    async GetAllGames(): Promise<GameViewModel[]> {
+        return await client.db('GamePedia').collection<GameViewModel>('games').find({}).toArray();
+    },
+
+    async FindGamesByTitle(title: string): Promise<GameViewModel[]> {
+        return await client
+            .db('GamePedia')
+            .collection<GameViewModel>('games')
             .find({ title: { $regex: title, $options: 'i' } })
             .toArray();
     },
 
-    async GetSortedGames(sortMethod: any) {
-        return await client.db('GamePedia').collection('games').find({}).sort(sortMethod).toArray();
-    },
-
-    async GetManyGamesByID(gameIds: any) {
+    async GetSortedGames(sortMethod: Sort): Promise<GameViewModel[]> {
         return await client
             .db('GamePedia')
-            .collection('games')
+            .collection<GameViewModel>('games')
+            .find({})
+            .sort(sortMethod)
+            .toArray();
+    },
+
+    async GetManyGamesByID(gameIds: number[]): Promise<GameViewModel[]> {
+        return await client
+            .db('GamePedia')
+            .collection<GameViewModel>('games')
             .find({ id: { $in: gameIds } })
             .toArray();
     },
 
-    async GetGameByID(id: number) {
-        return await client.db('GamePedia').collection('games').findOne({ id: id });
+    async GetGameByID(id: number): Promise<GameViewModel | null> {
+        return await client.db('GamePedia').collection<GameViewModel>('games').findOne({ id: id });
     },
 
     async DeleteGame(id: number): Promise<boolean> {
@@ -39,15 +49,15 @@ export const GamesRepository = {
         return result.deletedCount === 1;
     },
 
-    async CreateNewGame(CreatedGame: any): Promise<GameViewModel> {
-        await client.db('GamePedia').collection('games').insertOne(CreatedGame);
+    async CreateNewGame(CreatedGame: CreateGameDbModel): Promise<GameViewModel> {
+        await client.db('GamePedia').collection<GameViewModel>('games').insertOne(CreatedGame);
         return CreatedGame;
     },
 
-    async UpdateGame(id: number, data: any) {
+    async UpdateGame(id: number, data: UpdateGameDbModel): Promise<boolean> {
         const result = await client
             .db('GamePedia')
-            .collection('games')
+            .collection<GameViewModel>('games')
             .updateOne({ id: id }, { $set: data });
         return result.modifiedCount === 1;
     },
