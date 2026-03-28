@@ -7,10 +7,10 @@ import {
     bodyTextReviewValidatorMiddleware,
 } from '../validator/ReviewInputDataValidator';
 import { ReviewInputModel } from '../models/ReviewInputModel';
-import { reviewService } from '../business/review-business-layer';
+import { reviewService } from '../business/review-service';
 import { URIParamsId } from '../models/URIParamsId';
 import { paramsIdValidatorMiddleware } from '../validator/GamesInputDataValidator';
-import { gamesService } from '../business/games-business-layer';
+import { gamesService } from '../business/games-service';
 import { authMiddleware } from '../validator/auth-middleware';
 
 export const ReviewRouter = Router({});

@@ -7,7 +7,7 @@ import {
 } from '../validator/LoginAndRegInputDataValidator';
 import { validationResult } from 'express-validator';
 import { HTTP_CODES } from '../utility';
-import { UserService } from '../business/user-business-layer';
+import { UserService } from '../business/user-service';
 import { jwtService } from '../application/jwtService';
 import { config } from '../config';
 

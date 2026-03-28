@@ -9,7 +9,7 @@ import { validationResult } from 'express-validator';
 import { HTTP_CODES } from '../utility';
 import { UserRepository } from '../repositories/user-db-repository';
 import { RegistrationInputModel } from '../models/RegistrationInputModel';
-import { UserService } from '../business/user-business-layer';
+import { UserService } from '../business/user-service';
 
 export const RegistrationRouter = Router({});
 

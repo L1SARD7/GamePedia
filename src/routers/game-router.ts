@@ -17,8 +17,8 @@ import {
     queryTitleValidatorMiddleware,
 } from '../validator/GamesInputDataValidator';
 import { validationResult } from 'express-validator';
-import { gamesService } from '../business/games-business-layer';
-import { reviewService } from '../business/review-business-layer';
+import { gamesService } from '../business/games-service';
+import { reviewService } from '../business/review-service';
 import { authMiddleware } from '../validator/auth-middleware';
 import { verifyAdmin } from '../validator/verify-admin-middleware';
 

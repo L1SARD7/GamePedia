@@ -1,7 +1,7 @@
 import { Filter, Sort } from 'mongodb';
 import { CreateGameDbModel, GameViewModel, UpdateGameDbModel } from '../models/GameViewModel';
 import { GamesRepository } from '../repositories/games-db-repository';
-import { reviewService } from './review-business-layer';
+import { reviewService } from './review-service';
 
 export const gamesService = {
     async GetGamesByFilter(title: string | null, genre: string | null): Promise<GameViewModel[]> {

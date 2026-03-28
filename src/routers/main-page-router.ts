@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { gamesService } from '../business/games-business-layer';
+import { gamesService } from '../business/games-service';
 import { HTTP_CODES } from '../utility';
 
 export const MainRouter = Router({});

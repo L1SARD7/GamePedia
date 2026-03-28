@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
-import { reviewService } from '../business/review-business-layer';
-import { gamesService } from '../business/games-business-layer';
+import { reviewService } from '../business/review-service';
+import { gamesService } from '../business/games-service';
 import { authMiddleware } from '../validator/auth-middleware';
 import { HTTP_CODES } from '../utility';
 
