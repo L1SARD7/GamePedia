@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const emailAdapter = {
-    async sendConfirmationCode(email: string, confirmationCode: string, userId: number) {
+    async sendConfirmationCode(email: string, confirmationCode: string, userId: string) {
         await transporter.sendMail({
             from: '"GamePedia" <twoakaynt0@gmail.com>',
             to: email,

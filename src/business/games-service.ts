@@ -23,11 +23,11 @@ export const gamesService = {
         return await GamesRepository.GetAllGames();
     },
 
-    async GetManyGamesByID(gameIds: number[]): Promise<GameViewModel[]> {
+    async GetManyGamesByID(gameIds: string[]): Promise<GameViewModel[]> {
         return await GamesRepository.GetManyGamesByID(gameIds);
     },
 
-    async GetGameByID(id: number): Promise<GameViewModel | null> {
+    async GetGameByID(id: string): Promise<GameViewModel | null> {
         return await GamesRepository.GetGameByID(id);
     },
 
@@ -41,7 +41,7 @@ export const gamesService = {
         return await GamesRepository.GetSortedGames(sortMethod);
     },
 
-    async DeleteGame(id: number): Promise<boolean> {
+    async DeleteGame(id: string): Promise<boolean> {
         return await GamesRepository.DeleteGame(id);
     },
 
@@ -56,7 +56,7 @@ export const gamesService = {
         bannerURL: string,
     ): Promise<GameViewModel | null> {
         const newGame: CreateGameDbModel = {
-            id: +new Date(),
+            id: crypto.randomUUID(),
             title,
             genre,
             release_year,
@@ -72,7 +72,7 @@ export const gamesService = {
     },
 
     async UpdateGame(
-        id: number,
+        id: string,
         title: string,
         genre: string,
         release_year: number,
@@ -98,7 +98,7 @@ export const gamesService = {
         }
         return await GamesRepository.GetGameByID(id);
     },
-    async UpdateAvgRating(id: number): Promise<boolean> {
+    async UpdateAvgRating(id: string): Promise<boolean> {
         const reviews = await reviewService.GetReviews(id, null);
         const ratings = reviews.map((r) => Number(r.rating)).filter((r) => !isNaN(r));
         let newAvgRating: GameViewModel['avgRating'] = null;

@@ -1,7 +1,7 @@
 export type ReviewViewModel = {
-    id: number;
-    gameId: number;
-    authorId: number;
+    id: string;
+    gameId: string;
+    authorId: string;
     authorName: string;
     rating: number;
     text: string;

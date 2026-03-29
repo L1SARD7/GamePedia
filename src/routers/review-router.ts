@@ -1,5 +1,9 @@
-import { Router, Request, Response } from 'express';
-import { RequestWithParams, RequestWithParamsAndBody } from '../models/RequestTypes';
+import { Router, Response } from 'express';
+import {
+    RequestWithParams,
+    RequestWithParamsAndBody,
+    RequestWithQuery,
+} from '../models/RequestTypes';
 import { validationResult } from 'express-validator';
 import { HTTP_CODES } from '../utility';
 import {
@@ -15,20 +19,20 @@ import { authMiddleware } from '../validator/auth-middleware';
 
 export const ReviewRouter = Router({});
 
-ReviewRouter.get('/', async (req: Request, res: Response) => {
-    if (!req.query.gameId && !req.query.authorId) {
-        res.status(HTTP_CODES.BAD_REQUEST_400).json({
-            error: 'Bad Request',
-            message: 'Missing required query parameters: gameId or authorId',
-        });
-        return;
-    }
-    const SortedReviews = await reviewService.GetReviews(
-        Number(req.query.gameId),
-        Number(req.query.authorId),
-    );
-    res.status(HTTP_CODES.OK_200).json(SortedReviews);
-});
+ReviewRouter.get(
+    '/',
+    async (req: RequestWithQuery<{ gameId: string; authorId: string }>, res: Response) => {
+        if (!req.query.gameId && !req.query.authorId) {
+            res.status(HTTP_CODES.BAD_REQUEST_400).json({
+                error: 'Bad Request',
+                message: 'Missing required query parameters: gameId or authorId',
+            });
+            return;
+        }
+        const SortedReviews = await reviewService.GetReviews(req.query.gameId, req.query.authorId);
+        res.status(HTTP_CODES.OK_200).json(SortedReviews);
+    },
+);
 
 ReviewRouter.post(
     '/:id',
@@ -47,7 +51,7 @@ ReviewRouter.post(
             );
             return;
         }
-        const isAlreadyCreated = await reviewService.GetReviews(+req.params.id, +req.user.id);
+        const isAlreadyCreated = await reviewService.GetReviews(req.params.id, req.user.id);
         if (isAlreadyCreated.length !== 0) {
             res.status(HTTP_CODES.CONFLICT_409).send('В вас вже є залишений відгук цій грі.');
             return;
@@ -55,7 +59,7 @@ ReviewRouter.post(
         const CreatedReview = await reviewService.CreateNewReview(
             +req.body.rating,
             req.body.text,
-            +req.params.id,
+            req.params.id,
             req.user.id,
             req.user.username,
         );
@@ -63,7 +67,7 @@ ReviewRouter.post(
             res.status(HTTP_CODES.BAD_REQUEST_400).redirect(`/`);
             return;
         }
-        await gamesService.UpdateAvgRating(+req.params.id);
+        await gamesService.UpdateAvgRating(req.params.id);
         res.redirect(`/games/${req.params.id}`);
     },
 );
@@ -78,7 +82,7 @@ ReviewRouter.delete(
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const isExist = await reviewService.GetReviewById(+req.params.id);
+        const isExist = await reviewService.GetReviewById(req.params.id);
         if (!isExist) {
             res.status(HTTP_CODES.NOT_FOUND_404).send('Такого відгуку не існує.');
             return;
@@ -87,7 +91,7 @@ ReviewRouter.delete(
             res.status(HTTP_CODES.FORBIDDEN_403).send('Ви не маєте права видалити чужий відгук.');
             return;
         }
-        const isDeleted = await reviewService.DeleteReview(+req.params.id);
+        const isDeleted = await reviewService.DeleteReview(req.params.id);
         if (!isDeleted) {
             res.status(HTTP_CODES.INTERNAL_SERVER_ERROR_500).send(
                 'Не вдалося видалити відгук. Спробуйте пізніше.',
@@ -110,7 +114,7 @@ ReviewRouter.put(
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const isExist = await reviewService.GetReviewById(+req.params.id);
+        const isExist = await reviewService.GetReviewById(req.params.id);
         if (!req.user) {
             res.status(HTTP_CODES.UNAUTHORIZED_401).send(
                 'Для того, щоб залишити відгук, необхідно бути авторизованим.',
@@ -126,7 +130,7 @@ ReviewRouter.put(
             return;
         }
         const changedReview = await reviewService.ChangeReview(
-            +req.params.id,
+            req.params.id,
             +req.body.rating,
             req.body.text,
         );

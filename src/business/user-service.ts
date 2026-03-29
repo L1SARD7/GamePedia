@@ -15,7 +15,7 @@ export const UserService = {
     ): Promise<UserDbModel | null> {
         const passwordHash = await this.encodePassword(password);
         const newUser: UserDbModel = {
-            id: +new Date(),
+            id: crypto.randomUUID(),
             login: login,
             email: email,
             passwordHash: passwordHash,
@@ -72,7 +72,7 @@ export const UserService = {
         }
     },
 
-    async confirmEmail(userId: number, confirmationCode: string): Promise<boolean> {
+    async confirmEmail(userId: string, confirmationCode: string): Promise<boolean> {
         const userInfo = await UserRepository.findUserById(userId);
         if (!userInfo || !userInfo.emailVerification) {
             return false;

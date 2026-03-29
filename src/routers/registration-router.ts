@@ -20,7 +20,7 @@ RegistrationRouter.get(
         res: Response,
     ) => {
         const result = await UserService.confirmEmail(
-            +req.query.userId,
+            req.query.userId,
             req.params.confirmationCode,
         );
         if (!result) {

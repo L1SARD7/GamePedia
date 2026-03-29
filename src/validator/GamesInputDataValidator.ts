@@ -15,7 +15,7 @@ export const queryGenreValidatorMiddleware = query('genre')
 
 export const paramsIdValidatorMiddleware = param('id')
     .trim()
-    .isNumeric()
+    .isString()
     .withMessage('Incorrect ID.');
 
 export const gameDataInputValidatorMiddleware = [

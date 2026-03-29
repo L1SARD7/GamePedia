@@ -1,5 +1,5 @@
 export type UserViewModel = {
-    id: number;
+    id: string;
     login: string;
     email: string;
     passwordHash: string;
@@ -7,7 +7,7 @@ export type UserViewModel = {
 };
 
 export type UserInfoModel = {
-    id: number;
+    id: string;
     username: string;
     email: string;
     isAdmin: boolean;

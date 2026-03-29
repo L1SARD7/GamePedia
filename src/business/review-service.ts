@@ -7,7 +7,7 @@ import {
 import { ReviewRepository } from '../repositories/review-db-repository';
 
 export const reviewService = {
-    async GetReviews(gameId: number | null, authorId: number | null): Promise<ReviewViewModel[]> {
+    async GetReviews(gameId: string | null, authorId: string | null): Promise<ReviewViewModel[]> {
         const filter: Filter<ReviewViewModel> = {};
         if (gameId !== null) {
             filter.gameId = gameId;
@@ -18,19 +18,19 @@ export const reviewService = {
         return await ReviewRepository.FindReviews(filter);
     },
 
-    async GetReviewById(id: number): Promise<ReviewViewModel | null> {
+    async GetReviewById(id: string): Promise<ReviewViewModel | null> {
         return await ReviewRepository.FindReviewByReviewId(id);
     },
 
     async CreateNewReview(
         rating: number,
         text: string,
-        gameId: number,
-        authorId: number,
+        gameId: string,
+        authorId: string,
         authorName: string,
     ): Promise<ReviewViewModel> {
         const newReview: CreateReviewDbModel = {
-            id: +new Date(),
+            id: crypto.randomUUID(),
             gameId,
             authorId,
             authorName,
@@ -41,16 +41,16 @@ export const reviewService = {
         return newReview;
     },
 
-    async DeleteReview(id: number): Promise<boolean> {
+    async DeleteReview(id: string): Promise<boolean> {
         return await ReviewRepository.DeleteReview(id);
     },
 
-    async DeleteAllReviewsOfDeletedGame(id: number): Promise<boolean> {
+    async DeleteAllReviewsOfDeletedGame(id: string): Promise<boolean> {
         return await ReviewRepository.DeleteAllReviewsOfDeletedGame(id);
     },
 
     async ChangeReview(
-        reviewId: number,
+        reviewId: string,
         rating: number,
         text: string,
     ): Promise<ReviewViewModel | null> {

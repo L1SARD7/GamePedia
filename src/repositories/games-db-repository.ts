@@ -32,7 +32,7 @@ export const GamesRepository = {
             .toArray();
     },
 
-    async GetManyGamesByID(gameIds: number[]): Promise<GameViewModel[]> {
+    async GetManyGamesByID(gameIds: string[]): Promise<GameViewModel[]> {
         return await client
             .db('GamePedia')
             .collection<GameViewModel>('games')
@@ -40,11 +40,11 @@ export const GamesRepository = {
             .toArray();
     },
 
-    async GetGameByID(id: number): Promise<GameViewModel | null> {
+    async GetGameByID(id: string): Promise<GameViewModel | null> {
         return await client.db('GamePedia').collection<GameViewModel>('games').findOne({ id: id });
     },
 
-    async DeleteGame(id: number): Promise<boolean> {
+    async DeleteGame(id: string): Promise<boolean> {
         const result = await client.db('GamePedia').collection('games').deleteOne({ id: id });
         return result.deletedCount === 1;
     },
@@ -54,7 +54,7 @@ export const GamesRepository = {
         return CreatedGame;
     },
 
-    async UpdateGame(id: number, data: UpdateGameDbModel): Promise<boolean> {
+    async UpdateGame(id: string, data: UpdateGameDbModel): Promise<boolean> {
         const result = await client
             .db('GamePedia')
             .collection<GameViewModel>('games')

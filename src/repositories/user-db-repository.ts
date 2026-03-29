@@ -9,7 +9,7 @@ export const UserRepository = {
             .findOne({ login: login });
     },
 
-    async findUserById(id: number): Promise<UserDbModel | null> {
+    async findUserById(id: string): Promise<UserDbModel | null> {
         return await client.db('GamePedia').collection<UserDbModel>('users').findOne({ id: id });
     },
 
@@ -21,7 +21,7 @@ export const UserRepository = {
         return result.acknowledged;
     },
 
-    async updateEmailConfirmationStatus(userId: number): Promise<boolean> {
+    async updateEmailConfirmationStatus(userId: string): Promise<boolean> {
         const result = await client
             .db('GamePedia')
             .collection<UserDbModel>('users')

@@ -1,5 +1,5 @@
 export type GameViewModel = {
-    id: number;
+    id: string;
     title: string;
     genre: string;
     release_year: number;
