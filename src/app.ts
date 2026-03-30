@@ -8,6 +8,7 @@ import methodOverride from 'method-override';
 import { MainRouter } from './routers/main-page-router';
 import cookieParser from 'cookie-parser';
 import { jwtService } from './application/jwtService';
+import { globalErrorHandler } from './validator/error-handler';
 
 export const app = express();
 
@@ -43,3 +44,5 @@ app.use('/profile', ProfileRouter);
 app.use('/review', ReviewRouter);
 
 app.use('/', MainRouter);
+
+app.use(globalErrorHandler);
