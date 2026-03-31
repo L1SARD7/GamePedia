@@ -10,6 +10,7 @@ import { HTTP_CODES } from '../utility';
 import { UserService } from '../business/user-service';
 import { jwtService } from '../application/jwtService';
 import { config } from '../config';
+import { asyncErrorHandler } from '../validator/async-error-handler';
 
 export const LoginRouter = Router({});
 
@@ -21,7 +22,7 @@ LoginRouter.post(
     '/',
     bodyLoginValidatorMiddleware,
     bodyPasswordValidatorMiddleware,
-    async (req: RequestWithBody<LoginInputModel>, res: Response) => {
+    asyncErrorHandler(async (req: RequestWithBody<LoginInputModel>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
@@ -49,5 +50,5 @@ LoginRouter.post(
             maxAge: config.TOKEN_EXPIRATION_TIME,
         });
         res.redirect('/profile');
-    },
+    }),
 );

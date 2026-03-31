@@ -21,19 +21,25 @@ import { gamesService } from '../business/games-service';
 import { reviewService } from '../business/review-service';
 import { authMiddleware } from '../validator/auth-middleware';
 import { verifyAdmin } from '../validator/verify-admin-middleware';
+import { asyncErrorHandler } from '../validator/async-error-handler';
 
 export const GamesRouter = Router({});
 
-GamesRouter.get('/add', authMiddleware, verifyAdmin, async (req: Request, res: Response) => {
-    res.status(HTTP_CODES.OK_200).render('create-new-game');
-});
+GamesRouter.get(
+    '/add',
+    authMiddleware,
+    verifyAdmin,
+    asyncErrorHandler(async (req: Request, res: Response) => {
+        res.status(HTTP_CODES.OK_200).render('create-new-game');
+    }),
+);
 
 GamesRouter.post(
     '/add',
     authMiddleware,
     verifyAdmin,
     gameDataInputValidatorMiddleware,
-    async (req: RequestWithBody<CreateGameInputModel>, res: Response) => {
+    asyncErrorHandler(async (req: RequestWithBody<CreateGameInputModel>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
@@ -55,13 +61,13 @@ GamesRouter.post(
             return;
         }
         res.redirect(`/games/${CreatedGame.id}`);
-    },
+    }),
 );
 
 GamesRouter.get(
     '/list',
     queryTitleValidatorMiddleware,
-    async (req: RequestWithQuery<{ title: string }>, res) => {
+    asyncErrorHandler(async (req: RequestWithQuery<{ title: string }>, res) => {
         const validation = validationResult(req);
         if (req.query.title && !validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
@@ -69,14 +75,14 @@ GamesRouter.get(
         }
         const gamesList = await gamesService.GetGamesByFilter(req.query.title ?? null, null);
         res.render('games-list', { games: gamesList });
-    },
+    }),
 );
 
 GamesRouter.get(
     '/',
     queryTitleValidatorMiddleware,
     queryGenreValidatorMiddleware,
-    async (req: RequestWithQuery<GetGameWithQuery>, res: Response) => {
+    asyncErrorHandler(async (req: RequestWithQuery<GetGameWithQuery>, res: Response) => {
         const validation = validationResult(req);
         if (req.query.title && req.query.genre && !validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
@@ -87,13 +93,13 @@ GamesRouter.get(
             req.query.genre ?? null,
         );
         res.status(HTTP_CODES.OK_200).json(SortedGames);
-    },
+    }),
 );
 
 GamesRouter.get(
     '/:id',
     paramsIdValidatorMiddleware,
-    async (req: RequestWithParams<URIParamsId>, res: Response) => {
+    asyncErrorHandler(async (req: RequestWithParams<URIParamsId>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
@@ -109,7 +115,7 @@ GamesRouter.get(
             game: FoundGame,
             reviews: Reviews,
         });
-    },
+    }),
 );
 
 GamesRouter.get(
@@ -117,7 +123,7 @@ GamesRouter.get(
     authMiddleware,
     verifyAdmin,
     paramsIdValidatorMiddleware,
-    async (req: RequestWithParams<URIParamsId>, res: Response) => {
+    asyncErrorHandler(async (req: RequestWithParams<URIParamsId>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
@@ -129,7 +135,7 @@ GamesRouter.get(
             return;
         }
         res.status(HTTP_CODES.OK_200).render('edit-game', { game: SelectedGame, error: null });
-    },
+    }),
 );
 
 GamesRouter.delete(
@@ -137,7 +143,7 @@ GamesRouter.delete(
     authMiddleware,
     verifyAdmin,
     paramsIdValidatorMiddleware,
-    async (req: RequestWithParams<URIParamsId>, res: Response) => {
+    asyncErrorHandler(async (req: RequestWithParams<URIParamsId>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
@@ -149,7 +155,7 @@ GamesRouter.delete(
             return;
         }
         res.redirect('/');
-    },
+    }),
 );
 
 GamesRouter.put(
@@ -158,27 +164,29 @@ GamesRouter.put(
     verifyAdmin,
     paramsIdValidatorMiddleware,
     gameDataInputValidatorMiddleware,
-    async (req: RequestWithParamsAndBody<URIParamsId, UpdateGameInputModel>, res: Response) => {
-        const validation = validationResult(req);
-        if (!validation.isEmpty()) {
-            res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
-            return;
-        }
-        const UpdatedGame = await gamesService.UpdateGame(
-            req.params.id,
-            req.body.title,
-            req.body.genre,
-            req.body.release_year,
-            req.body.developer,
-            req.body.description,
-            req.body.imageURL,
-            req.body.trailerYoutubeId,
-            req.body.bannerURL,
-        );
-        if (!UpdatedGame) {
-            res.sendStatus(HTTP_CODES.NOT_FOUND_404);
-            return;
-        }
-        res.redirect(`/games/${req.params.id}`);
-    },
+    asyncErrorHandler(
+        async (req: RequestWithParamsAndBody<URIParamsId, UpdateGameInputModel>, res: Response) => {
+            const validation = validationResult(req);
+            if (!validation.isEmpty()) {
+                res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+                return;
+            }
+            const UpdatedGame = await gamesService.UpdateGame(
+                req.params.id,
+                req.body.title,
+                req.body.genre,
+                req.body.release_year,
+                req.body.developer,
+                req.body.description,
+                req.body.imageURL,
+                req.body.trailerYoutubeId,
+                req.body.bannerURL,
+            );
+            if (!UpdatedGame) {
+                res.sendStatus(HTTP_CODES.NOT_FOUND_404);
+                return;
+            }
+            res.redirect(`/games/${req.params.id}`);
+        },
+    ),
 );

@@ -16,22 +16,28 @@ import { URIParamsId } from '../models/URIParamsId';
 import { paramsIdValidatorMiddleware } from '../validator/GamesInputDataValidator';
 import { gamesService } from '../business/games-service';
 import { authMiddleware } from '../validator/auth-middleware';
+import { asyncErrorHandler } from '../validator/async-error-handler';
 
 export const ReviewRouter = Router({});
 
 ReviewRouter.get(
     '/',
-    async (req: RequestWithQuery<{ gameId: string; authorId: string }>, res: Response) => {
-        if (!req.query.gameId && !req.query.authorId) {
-            res.status(HTTP_CODES.BAD_REQUEST_400).json({
-                error: 'Bad Request',
-                message: 'Missing required query parameters: gameId or authorId',
-            });
-            return;
-        }
-        const SortedReviews = await reviewService.GetReviews(req.query.gameId, req.query.authorId);
-        res.status(HTTP_CODES.OK_200).json(SortedReviews);
-    },
+    asyncErrorHandler(
+        async (req: RequestWithQuery<{ gameId: string; authorId: string }>, res: Response) => {
+            if (!req.query.gameId && !req.query.authorId) {
+                res.status(HTTP_CODES.BAD_REQUEST_400).json({
+                    error: 'Bad Request',
+                    message: 'Missing required query parameters: gameId or authorId',
+                });
+                return;
+            }
+            const SortedReviews = await reviewService.GetReviews(
+                req.query.gameId,
+                req.query.authorId,
+            );
+            res.status(HTTP_CODES.OK_200).json(SortedReviews);
+        },
+    ),
 );
 
 ReviewRouter.post(
@@ -39,44 +45,46 @@ ReviewRouter.post(
     authMiddleware,
     bodyRatingReviewValidatorMiddleware,
     bodyTextReviewValidatorMiddleware,
-    async (req: RequestWithParamsAndBody<URIParamsId, ReviewInputModel>, res: Response) => {
-        const validation = validationResult(req);
-        if (!validation.isEmpty()) {
-            res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
-            return;
-        }
-        if (!req.user) {
-            res.status(HTTP_CODES.UNAUTHORIZED_401).send(
-                'Щоб залишити відгук, потрібно бути авторизованим',
+    asyncErrorHandler(
+        async (req: RequestWithParamsAndBody<URIParamsId, ReviewInputModel>, res: Response) => {
+            const validation = validationResult(req);
+            if (!validation.isEmpty()) {
+                res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+                return;
+            }
+            if (!req.user) {
+                res.status(HTTP_CODES.UNAUTHORIZED_401).send(
+                    'Щоб залишити відгук, потрібно бути авторизованим',
+                );
+                return;
+            }
+            const isAlreadyCreated = await reviewService.GetReviews(req.params.id, req.user.id);
+            if (isAlreadyCreated.length !== 0) {
+                res.status(HTTP_CODES.CONFLICT_409).send('В вас вже є залишений відгук цій грі.');
+                return;
+            }
+            const CreatedReview = await reviewService.CreateNewReview(
+                +req.body.rating,
+                req.body.text,
+                req.params.id,
+                req.user.id,
+                req.user.username,
             );
-            return;
-        }
-        const isAlreadyCreated = await reviewService.GetReviews(req.params.id, req.user.id);
-        if (isAlreadyCreated.length !== 0) {
-            res.status(HTTP_CODES.CONFLICT_409).send('В вас вже є залишений відгук цій грі.');
-            return;
-        }
-        const CreatedReview = await reviewService.CreateNewReview(
-            +req.body.rating,
-            req.body.text,
-            req.params.id,
-            req.user.id,
-            req.user.username,
-        );
-        if (!CreatedReview) {
-            res.status(HTTP_CODES.BAD_REQUEST_400).redirect(`/`);
-            return;
-        }
-        await gamesService.UpdateAvgRating(req.params.id);
-        res.redirect(`/games/${req.params.id}`);
-    },
+            if (!CreatedReview) {
+                res.status(HTTP_CODES.BAD_REQUEST_400).redirect(`/`);
+                return;
+            }
+            await gamesService.UpdateAvgRating(req.params.id);
+            res.redirect(`/games/${req.params.id}`);
+        },
+    ),
 );
 
 ReviewRouter.delete(
     '/:id',
     authMiddleware,
     paramsIdValidatorMiddleware,
-    async (req: RequestWithParams<URIParamsId>, res: Response) => {
+    asyncErrorHandler(async (req: RequestWithParams<URIParamsId>, res: Response) => {
         const validation = validationResult(req);
         if (!validation.isEmpty()) {
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
@@ -100,7 +108,7 @@ ReviewRouter.delete(
         }
         await gamesService.UpdateAvgRating(isExist.gameId);
         res.redirect(req.body.returnTo);
-    },
+    }),
 );
 
 ReviewRouter.put(
@@ -108,39 +116,43 @@ ReviewRouter.put(
     authMiddleware,
     bodyRatingReviewValidatorMiddleware,
     bodyTextReviewValidatorMiddleware,
-    async (req: RequestWithParamsAndBody<URIParamsId, ReviewInputModel>, res: Response) => {
-        const validation = validationResult(req);
-        if (!validation.isEmpty()) {
-            res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
-            return;
-        }
-        const isExist = await reviewService.GetReviewById(req.params.id);
-        if (!req.user) {
-            res.status(HTTP_CODES.UNAUTHORIZED_401).send(
-                'Для того, щоб залишити відгук, необхідно бути авторизованим.',
+    asyncErrorHandler(
+        async (req: RequestWithParamsAndBody<URIParamsId, ReviewInputModel>, res: Response) => {
+            const validation = validationResult(req);
+            if (!validation.isEmpty()) {
+                res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+                return;
+            }
+            const isExist = await reviewService.GetReviewById(req.params.id);
+            if (!req.user) {
+                res.status(HTTP_CODES.UNAUTHORIZED_401).send(
+                    'Для того, щоб залишити відгук, необхідно бути авторизованим.',
+                );
+                return;
+            }
+            if (!isExist) {
+                res.status(HTTP_CODES.NOT_FOUND_404).send('Відгук не знайдено.');
+                return;
+            }
+            if (req.user?.id !== isExist.authorId) {
+                res.status(HTTP_CODES.FORBIDDEN_403).send(
+                    'Ви не маєте права редагувати чужий відгук.',
+                );
+                return;
+            }
+            const changedReview = await reviewService.ChangeReview(
+                req.params.id,
+                +req.body.rating,
+                req.body.text,
             );
-            return;
-        }
-        if (!isExist) {
-            res.status(HTTP_CODES.NOT_FOUND_404).send('Відгук не знайдено.');
-            return;
-        }
-        if (req.user?.id !== isExist.authorId) {
-            res.status(HTTP_CODES.FORBIDDEN_403).send('Ви не маєте права редагувати чужий відгук.');
-            return;
-        }
-        const changedReview = await reviewService.ChangeReview(
-            req.params.id,
-            +req.body.rating,
-            req.body.text,
-        );
-        if (!changedReview) {
-            res.status(HTTP_CODES.INTERNAL_SERVER_ERROR_500).send(
-                'Не вдалося оновити відгук. Перевірте дані та спробуйте ще раз.',
-            );
-            return;
-        }
-        await gamesService.UpdateAvgRating(isExist.gameId);
-        res.redirect(req.body.returnTo);
-    },
+            if (!changedReview) {
+                res.status(HTTP_CODES.INTERNAL_SERVER_ERROR_500).send(
+                    'Не вдалося оновити відгук. Перевірте дані та спробуйте ще раз.',
+                );
+                return;
+            }
+            await gamesService.UpdateAvgRating(isExist.gameId);
+            res.redirect(req.body.returnTo);
+        },
+    ),
 );

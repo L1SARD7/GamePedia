@@ -10,25 +10,28 @@ import { HTTP_CODES } from '../utility';
 import { UserRepository } from '../repositories/user-db-repository';
 import { RegistrationInputModel } from '../models/RegistrationInputModel';
 import { UserService } from '../business/user-service';
+import { asyncErrorHandler } from '../validator/async-error-handler';
 
 export const RegistrationRouter = Router({});
 
 RegistrationRouter.get(
     '/confirmEmail/:confirmationCode',
-    async (
-        req: RequestWithParamsAndQuery<{ confirmationCode: string }, { userId: string }>,
-        res: Response,
-    ) => {
-        const result = await UserService.confirmEmail(
-            req.query.userId,
-            req.params.confirmationCode,
-        );
-        if (!result) {
-            res.status(400).send('Невірний або прострочений код підтвердження');
-            return;
-        }
-        res.redirect('/login');
-    },
+    asyncErrorHandler(
+        async (
+            req: RequestWithParamsAndQuery<{ confirmationCode: string }, { userId: string }>,
+            res: Response,
+        ) => {
+            const result = await UserService.confirmEmail(
+                req.query.userId,
+                req.params.confirmationCode,
+            );
+            if (!result) {
+                res.status(400).send('Невірний або прострочений код підтвердження');
+                return;
+            }
+            res.redirect('/login');
+        },
+    ),
 );
 
 RegistrationRouter.get('/', (req: Request, res: Response) => {
@@ -40,7 +43,7 @@ RegistrationRouter.post(
     bodyLoginValidatorMiddleware,
     bodyemailValidatorMiddleware,
     bodyPasswordValidatorMiddleware,
-    async (req: RequestWithBody<RegistrationInputModel>, res: Response) => {
+    asyncErrorHandler(async (req: RequestWithBody<RegistrationInputModel>, res: Response) => {
         const validation = validationResult(req);
         const formData = {
             login: req.body.login,
@@ -81,5 +84,5 @@ RegistrationRouter.post(
             successMessage:
                 'Акаунт успішно створений, щоб активувати його перейдіть за посиланням, яке було надіслано на вашу електонну пошту.',
         });
-    },
+    }),
 );

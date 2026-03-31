@@ -1,7 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { HTTP_CODES } from '../utility';
+import { AppError } from '../models/AppError';
 
-export const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const globalErrorHandler = (
+    err: AppError,
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     console.error('Сталася помилка:', err);
 
     if (res.headersSent) {

@@ -9,6 +9,8 @@ import { MainRouter } from './routers/main-page-router';
 import cookieParser from 'cookie-parser';
 import { jwtService } from './application/jwtService';
 import { globalErrorHandler } from './validator/error-handler';
+import { asyncErrorHandler } from './validator/async-error-handler';
+import { AppError } from './models/AppError';
 
 export const app = express();
 
@@ -20,15 +22,17 @@ app.use(express.static('front'));
 
 app.use(cookieParser());
 
-app.use(async (req, res, next) => {
-    res.locals.user = null;
+app.use(
+    asyncErrorHandler(async (req, res, next) => {
+        res.locals.user = null;
 
-    if (req.cookies.accessToken) {
-        const userInfo = await jwtService.getUserInfoByToken(req.cookies.accessToken);
-        res.locals.user = userInfo;
-    }
-    next();
-});
+        if (req.cookies.accessToken) {
+            const userInfo = await jwtService.getUserInfoByToken(req.cookies.accessToken);
+            res.locals.user = userInfo;
+        }
+        next();
+    }),
+);
 app.use(express.urlencoded({ extended: true }));
 
 app.use(methodOverride('_method'));
@@ -44,5 +48,11 @@ app.use('/profile', ProfileRouter);
 app.use('/review', ReviewRouter);
 
 app.use('/', MainRouter);
+
+app.all('*', (req, res, next) => {
+    const err: AppError = new Error(`Упс! Сторінку ${req.originalUrl} не знайдено`);
+    err.statusCode = 404;
+    next(err);
+});
 
 app.use(globalErrorHandler);
