@@ -22,6 +22,7 @@ import { reviewService } from '../business/review-service';
 import { authMiddleware } from '../validator/auth-middleware';
 import { verifyAdmin } from '../validator/verify-admin-middleware';
 import { asyncErrorHandler } from '../validator/async-error-handler';
+import { config } from '../config';
 
 export const GamesRouter = Router({});
 
@@ -93,6 +94,30 @@ GamesRouter.get(
             req.query.genre ?? null,
         );
         res.status(HTTP_CODES.OK_200).json(SortedGames);
+    }),
+);
+
+GamesRouter.get(
+    '/igdb/search',
+    authMiddleware,
+    verifyAdmin,
+    queryTitleValidatorMiddleware,
+    asyncErrorHandler(async (req: RequestWithQuery<{ title: string }>, res: Response) => {
+        const validation = validationResult(req);
+        if (!validation.isEmpty()) {
+            res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
+            return;
+        }
+
+        if (!config.IGDB.CLIENT_ID || !config.IGDB.CLIENT_SECRET) {
+            res.status(503).send({
+                error: 'IGDB integration is not configured. Add IGDB_CLIENT_ID and IGDB_CLIENT_SECRET.',
+            });
+            return;
+        }
+
+        const drafts = await gamesService.searchGameByIgdb(req.query.title);
+        res.status(HTTP_CODES.OK_200).json(drafts);
     }),
 );
 

@@ -2,6 +2,8 @@ import { Filter, Sort } from 'mongodb';
 import { CreateGameDbModel, GameViewModel, UpdateGameDbModel } from '../models/GameViewModel';
 import { GamesRepository } from '../repositories/games-db-repository';
 import { reviewService } from './review-service';
+import { igdbApiAdapter } from '../adapters/igdb-api-adapter';
+import { MappedIgdbGame } from '../models/IgdbModels';
 
 export const gamesService = {
     async GetGamesByFilter(title: string | null, genre: string | null): Promise<GameViewModel[]> {
@@ -43,6 +45,10 @@ export const gamesService = {
 
     async DeleteGame(id: string): Promise<boolean> {
         return await GamesRepository.DeleteGame(id);
+    },
+
+    async searchGameByIgdb(title: string): Promise<MappedIgdbGame[]> {
+        return await igdbApiAdapter.getGameInfoByTitle(title);
     },
 
     async CreateNewGame(

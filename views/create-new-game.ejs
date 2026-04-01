@@ -9,7 +9,18 @@
 <%- include('../Templates/header'); -%>
 <main class="main">
     <h1>Додати нову гру</h1>
-    <form class="auth-form" action="/games/add" method="post">
+    
+    <section>
+        <h2>Автозаповнення через IGDB</h2>
+        <label>
+            Назва гри для пошуку:
+            <input id="igdb-title" type="text" placeholder="Наприклад: The Witcher 3">
+        </label>
+        <button id="igdb-search-button" type="button" class="btn">Знайти в IGDB</button>
+        <div id="igdb-results"></div>
+    </section>
+
+    <form id="create-game-form" class="auth-form" action="/games/add" method="post">
         <label>Назва гри:<br><input type="text" name="title" required></label><br>
         <label>Жанр:<br><input type="text" name="genre" required></label><br>
         <label>Рік випуску:<br><input type="number" name="release_year"></label><br>
@@ -22,7 +33,7 @@
     </form>
 </main>
 
-<script src=""></script>
+<script src="/js/create-new-game.js"></script>
 
 </body>
 </html>

@@ -20,4 +20,8 @@ export const config = {
     },
     NODE_ENV: process.env.NODE_ENV || 'development',
     TOKEN_EXPIRATION_TIME: 6 * 60 * 60 * 1000,
+    IGDB: {
+        CLIENT_ID: process.env.IGDB_CLIENT_ID || '',
+        CLIENT_SECRET: process.env.IGDB_CLIENT_SECRET || '',
+    },
 };
