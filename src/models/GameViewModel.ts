@@ -8,8 +8,9 @@ export type GameViewModel = {
     imageURL: string;
     trailerYoutubeId: string;
     bannerURL: string;
+    createdAt: string;
     avgRating: number | null;
 };
 
 export type CreateGameDbModel = GameViewModel;
-export type UpdateGameDbModel = Partial<Omit<GameViewModel, 'id'>>;
+export type UpdateGameDbModel = Partial<Omit<GameViewModel, 'id' | 'createdAt'>>;

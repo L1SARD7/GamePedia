@@ -71,6 +71,7 @@ export const gamesService = {
             imageURL,
             trailerYoutubeId,
             bannerURL,
+            createdAt: new Date().toISOString(),
             avgRating: null,
         };
         await GamesRepository.CreateNewGame(newGame);

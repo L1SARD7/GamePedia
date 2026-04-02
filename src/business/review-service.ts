@@ -36,6 +36,7 @@ export const reviewService = {
             authorName,
             rating,
             text,
+            createdAt: new Date().toISOString(),
         };
         await ReviewRepository.CreateNewReview(newReview);
         return newReview;

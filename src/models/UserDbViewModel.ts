@@ -8,4 +8,5 @@ export type UserDbModel = {
         isConfirmed: boolean;
         confirmationCode: string;
     };
+    createdAt: string;
 };

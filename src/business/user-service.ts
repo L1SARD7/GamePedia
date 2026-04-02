@@ -24,6 +24,7 @@ export const UserService = {
                 isConfirmed: false,
                 confirmationCode: crypto.randomUUID(),
             },
+            createdAt: new Date().toISOString(),
         };
         await UserRepository.CreateNewUser(newUser);
         emailAdapter.sendConfirmationCode(
