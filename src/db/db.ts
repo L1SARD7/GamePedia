@@ -9,8 +9,9 @@ export async function runDB() {
     try {
         await client.connect();
         await client.db('GamePedia').command({ ping: 1 });
-        console.log('Conecting to Mongo DataBase completed');
-    } catch {
+        console.log('Connecting to Mongo DataBase completed');
+    } catch (error) {
         await client.close();
+        throw error;
     }
 }

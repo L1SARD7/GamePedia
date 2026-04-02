@@ -4,10 +4,15 @@ import { config } from './config';
 
 const PORT = config.PORT;
 const StartAPI = async () => {
-    runDB();
-    app.listen(PORT, () => {
-        console.log('Server started!');
-    });
+    try {
+        await runDB();
+        app.listen(PORT, () => {
+            console.log('Server started!');
+        });
+    } catch (error) {
+        console.error('Failed to start the application', error);
+        process.exit(1);
+    }
 };
 
 StartAPI();
