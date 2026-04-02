@@ -34,7 +34,7 @@ export const gamesService = {
     },
 
     async GetLatestGames(): Promise<GameViewModel[]> {
-        const sortMethod: Sort = { id: -1 };
+        const sortMethod: Sort = { createdAt: -1 };
         return await GamesRepository.GetSortedGames(sortMethod);
     },
 
