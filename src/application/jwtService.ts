@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
-import { UserInfoModel } from '../models/UserViewModel';
-import { JwtPayload } from '../models/AuthModel';
+import type { UserInfoModel } from '../models/UserViewModel';
+import type { JwtPayload } from '../models/AuthModel';
 
 const JWT_Secret = config.JWT_SECRET;
 

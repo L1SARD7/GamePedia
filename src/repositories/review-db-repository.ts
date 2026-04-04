@@ -1,6 +1,6 @@
-import { Filter } from 'mongodb';
+import type { Filter } from 'mongodb';
 import { client } from '../db/db';
-import { ReviewViewModel } from '../models/ReviewViewModel';
+import type { ReviewViewModel } from '../models/ReviewViewModel';
 
 export const ReviewRepository = {
     async FindReviews(filter: Filter<ReviewViewModel>): Promise<ReviewViewModel[]> {

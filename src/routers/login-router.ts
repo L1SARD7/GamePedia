@@ -1,6 +1,7 @@
-import { Request, Response, Router } from 'express';
-import { RequestWithBody } from '../models/RequestTypes';
-import { LoginInputModel } from '../models/LoginInputModel';
+import type { Request, Response } from 'express';
+import { Router } from 'express';
+import type { RequestWithBody } from '../models/RequestTypes';
+import type { LoginInputModel } from '../models/LoginInputModel';
 import {
     bodyLoginValidatorMiddleware,
     bodyPasswordValidatorMiddleware,

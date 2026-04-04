@@ -1,9 +1,9 @@
-import { Filter, Sort } from 'mongodb';
-import { CreateGameDbModel, GameViewModel, UpdateGameDbModel } from '../models/GameViewModel';
+import type { Filter, Sort } from 'mongodb';
+import type { CreateGameDbModel, GameViewModel, UpdateGameDbModel } from '../models/GameViewModel';
 import { GamesRepository } from '../repositories/games-db-repository';
 import { reviewService } from './review-service';
 import { igdbApiAdapter } from '../adapters/igdb-api-adapter';
-import { MappedIgdbGame } from '../models/IgdbModels';
+import type { MappedIgdbGame } from '../models/IgdbModels';
 
 export const gamesService = {
     async GetGamesByFilter(title: string | null, genre: string | null): Promise<GameViewModel[]> {

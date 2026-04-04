@@ -1,4 +1,4 @@
-import { UserInfoModel } from './UserViewModel';
+import type { UserInfoModel } from './UserViewModel';
 
 declare global {
     namespace Express {

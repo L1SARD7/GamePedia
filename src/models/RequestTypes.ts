@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import type { Request } from 'express';
 
 export type RequestWithQuery<TQuery> = Request<{}, {}, {}, TQuery, {}>;
 export type RequestWithParams<TParams> = Request<TParams>;

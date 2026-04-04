@@ -2,8 +2,8 @@ import { UserRepository } from '../repositories/user-db-repository';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { emailAdapter } from '../adapters/email-adapter';
-import { UserDbModel } from '../models/UserDbViewModel';
-import { UserInfoModel } from '../models/UserViewModel';
+import type { UserDbModel } from '../models/UserDbViewModel';
+import type { UserInfoModel } from '../models/UserViewModel';
 
 const SaltRounds = 10;
 

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 export const asyncErrorHandler = <T extends Request>(
     func: (req: T, res: Response, next: NextFunction) => Promise<unknown>,

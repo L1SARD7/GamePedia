@@ -1,5 +1,6 @@
-import { Router, Response } from 'express';
-import {
+import type { Response } from 'express';
+import { Router } from 'express';
+import type {
     RequestWithParams,
     RequestWithParamsAndBody,
     RequestWithQuery,
@@ -10,9 +11,9 @@ import {
     bodyRatingReviewValidatorMiddleware,
     bodyTextReviewValidatorMiddleware,
 } from '../validator/ReviewInputDataValidator';
-import { ReviewInputModel } from '../models/ReviewInputModel';
+import type { ReviewInputModel } from '../models/ReviewInputModel';
 import { reviewService } from '../business/review-service';
-import { URIParamsId } from '../models/URIParamsId';
+import type { URIParamsId } from '../models/URIParamsId';
 import { paramsIdValidatorMiddleware } from '../validator/GamesInputDataValidator';
 import { gamesService } from '../business/games-service';
 import { authMiddleware } from '../validator/auth-middleware';

@@ -1,6 +1,6 @@
-import { Filter, Sort } from 'mongodb';
+import type { Filter, Sort } from 'mongodb';
 import { client } from '../db/db';
-import { CreateGameDbModel, GameViewModel, UpdateGameDbModel } from '../models/GameViewModel';
+import type { CreateGameDbModel, GameViewModel, UpdateGameDbModel } from '../models/GameViewModel';
 
 export const GamesRepository = {
     async GetGames(filter: Filter<GameViewModel>): Promise<GameViewModel[]> {

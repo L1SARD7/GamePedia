@@ -10,7 +10,7 @@ import cookieParser from 'cookie-parser';
 import { jwtService } from './application/jwtService';
 import { globalErrorHandler } from './validator/error-handler';
 import { asyncErrorHandler } from './validator/async-error-handler';
-import { AppError } from './models/AppError';
+import type { AppError } from './models/AppError';
 
 export const app = express();
 

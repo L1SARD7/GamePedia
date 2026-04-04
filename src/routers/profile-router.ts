@@ -1,4 +1,5 @@
-import { Request, Response, Router } from 'express';
+import type { Request, Response } from 'express';
+import { Router } from 'express';
 import { reviewService } from '../business/review-service';
 import { gamesService } from '../business/games-service';
 import { authMiddleware } from '../validator/auth-middleware';

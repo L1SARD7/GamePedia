@@ -1,14 +1,15 @@
-import { Router, Request, Response } from 'express';
-import {
+import type { Request, Response } from 'express';
+import { Router } from 'express';
+import type {
     GetGameWithQuery,
     RequestWithBody,
     RequestWithParams,
     RequestWithParamsAndBody,
     RequestWithQuery,
 } from '../models/RequestTypes';
-import { CreateGameInputModel } from '../models/CreateGameInputModel';
-import { UpdateGameInputModel } from '../models/UpdateGameInputModel';
-import { URIParamsId } from '../models/URIParamsId';
+import type { CreateGameInputModel } from '../models/CreateGameInputModel';
+import type { UpdateGameInputModel } from '../models/UpdateGameInputModel';
+import type { URIParamsId } from '../models/URIParamsId';
 import { HTTP_CODES } from '../utility';
 import {
     gameDataInputValidatorMiddleware,

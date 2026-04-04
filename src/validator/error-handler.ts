@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { HTTP_CODES } from '../utility';
-import { AppError } from '../models/AppError';
+import type { AppError } from '../models/AppError';
 
 export const globalErrorHandler = (
     err: AppError,

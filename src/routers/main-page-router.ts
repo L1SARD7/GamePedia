@@ -1,4 +1,5 @@
-import { Request, Response, Router } from 'express';
+import type { Request, Response } from 'express';
+import { Router } from 'express';
 import { gamesService } from '../business/games-service';
 import { HTTP_CODES } from '../utility';
 import { asyncErrorHandler } from '../validator/async-error-handler';

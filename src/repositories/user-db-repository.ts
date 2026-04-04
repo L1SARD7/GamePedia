@@ -1,5 +1,5 @@
 import { client } from '../db/db';
-import { UserDbModel } from '../models/UserDbViewModel';
+import type { UserDbModel } from '../models/UserDbViewModel';
 
 export const UserRepository = {
     async FindUserByLogin(login: string): Promise<UserDbModel | null> {

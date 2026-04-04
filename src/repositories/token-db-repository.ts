@@ -1,5 +1,5 @@
 import { client } from '../db/db';
-import { IgdbTokenDbModel } from '../models/IgdbModels';
+import type { IgdbTokenDbModel } from '../models/IgdbModels';
 
 export const igdbTokenRepository = {
     async getToken(): Promise<IgdbTokenDbModel | null> {

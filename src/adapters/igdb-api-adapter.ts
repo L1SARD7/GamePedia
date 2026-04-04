@@ -1,5 +1,5 @@
 import { config } from '../config';
-import { IgdbGameViewModel, MappedIgdbGame, TokenResponseModel } from '../models/IgdbModels';
+import type { IgdbGameViewModel, MappedIgdbGame, TokenResponseModel } from '../models/IgdbModels';
 import { igdbTokenRepository } from '../repositories/token-db-repository';
 
 const buildIgdbImageUrl = (url: string | undefined, size: string): string => {

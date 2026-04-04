@@ -1,5 +1,5 @@
-import { Filter } from 'mongodb';
-import {
+import type { Filter } from 'mongodb';
+import type {
     CreateReviewDbModel,
     ReviewViewModel,
     UpdateReviewDbModel,

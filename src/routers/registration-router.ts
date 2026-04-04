@@ -1,5 +1,6 @@
-import { Request, Response, Router } from 'express';
-import { RequestWithBody, RequestWithParamsAndQuery } from '../models/RequestTypes';
+import type { Request, Response } from 'express';
+import { Router } from 'express';
+import type { RequestWithBody, RequestWithParamsAndQuery } from '../models/RequestTypes';
 import {
     bodyemailValidatorMiddleware,
     bodyLoginValidatorMiddleware,
@@ -8,7 +9,7 @@ import {
 import { validationResult } from 'express-validator';
 import { HTTP_CODES } from '../utility';
 import { UserRepository } from '../repositories/user-db-repository';
-import { RegistrationInputModel } from '../models/RegistrationInputModel';
+import type { RegistrationInputModel } from '../models/RegistrationInputModel';
 import { UserService } from '../business/user-service';
 import { asyncErrorHandler } from '../validator/async-error-handler';
 
