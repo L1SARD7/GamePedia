@@ -8,7 +8,7 @@ export const queryTitleValidatorMiddleware = query('title')
     );
 export const queryGenreValidatorMiddleware = query('genre')
     .trim()
-    .isLength({ min: 3, max: 15 })
+    .isLength({ min: 3, max: 50 })
     .withMessage(
         'Genre should be from 3 to 15 letters. Enter another title or dont use Title in your search.',
     );
@@ -22,7 +22,7 @@ export const gameDataInputValidatorMiddleware = [
     body('title').trim().isLength({ min: 3 }).withMessage('Title should be from letters.'),
     body('genre')
         .trim()
-        .isLength({ min: 3, max: 15 })
+        .isLength({ min: 3, max: 50 })
         .withMessage('Genre should be from 3 to 15 letters.'),
     body('release_year').isInt({ min: 1970, max: 2028 }).withMessage('Incorrect release year.'),
     body('developer')

@@ -12,6 +12,7 @@ const getEnvVar = (key: string): string => {
 
 export const config = {
     PORT: process.env.PORT || '3000',
+    BASE_URL: process.env.BASE_URL || `http://localhost:${process.env.PORT || '3000'}`,
     MONGO_URI: getEnvVar('MONGO_URI'),
     JWT_SECRET: getEnvVar('JWT_SECRET'),
     GOOGLE_APP: {
