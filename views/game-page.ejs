@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-<%- include('../Templates/header'); -%>
+<%- include('../templates/header'); -%>
 <main class="main">
     <% let userReview = (user && reviews) ? reviews.find(r => r.authorId === user.id) : null; %>
     <div class="game-top-row">
@@ -95,8 +95,8 @@
                     </div>
                     <div class="review-actions">
                         <button class="edit-btn"
-                            onclick='showEditForm(<%= userReview.id %>, <%= userReview.rating %>, <%- JSON.stringify(userReview.text || "") %>, <%= game.id %>)'>
-                            Редагувати
+                        onclick="showEditForm('<%= userReview.id %>', <%= userReview.rating %>, <%= JSON.stringify(userReview.text || '') %>, '<%= game.id %>')">
+                        Редагувати
                         </button>
                         <form action="/review/<%= userReview.id %>?_method=DELETE" method="POST" style="display:inline;">
                             <input type="hidden" name="returnTo" value="/games/<%= game.id %>">

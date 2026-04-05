@@ -8,7 +8,7 @@ function showEditForm(id, rating, text) {
         <textarea name="text" rows="2" cols="38">${text ? text.replace(/"/g, '&quot;') : ''}</textarea>
         </label><br>
         <button type="submit" class="btn save-btn">Зберегти</button>
-        <button type="button" class="btn cancel-btn" onclick="cancelEdit(${id}, \`${text ? text.replace(/`/g, '\\`') : ''}\`)">Скасувати</button>
+        <button type="button" class="btn cancel-btn" onclick="cancelEdit('${id}', \`${text ? text.replace(/`/g, '\\`') : ''}\`)">Скасувати</button>
     </form>`;
 }
 function cancelEdit(id, text) {

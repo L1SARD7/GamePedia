@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-<%- include('../Templates/header'); -%>
+<%- include('../templates/header'); -%>
 <main class="main">
     <h1>Мій кабінет</h1>
     <div class="profile-card">
@@ -29,10 +29,10 @@
     <div class="review-body" id="review-body-<%= review.id %>">
       <span class="review-text"><%= review.text ? review.text : "(Без тексту)" %></span>
     </div>
-    <div class="review-actions">
-      <button class="edit-btn" onclick='showEditForm(<%= review.id %>, <%= review.rating %>, <%- JSON.stringify(review.text || "") %>)'>
-        Редагувати
-      </button>
+    <button class="edit-btn" 
+    onclick="showEditForm('<%= review.id %>', <%= review.rating %>, <%= JSON.stringify(review.text || '') %>, '<%= review.gameId %>')">
+    Редагувати
+</button>
       <form action="/review/<%= review.id %>?_method=DELETE" method="POST" style="display:inline;">
         <input type="hidden" name="returnTo" value="/profile">
         <button type="submit" class="delete-btn">Видалити</button>
