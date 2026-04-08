@@ -20,7 +20,7 @@
     <h2>Ваші відгуки</h2>
     <% if (myReviews.length > 0) { %>
       <ul class="review-list">
-        <% myReviews.forEach(function(review, idx) { %>
+        <% myReviews.forEach(function(review) { %>
   <li class="review-item" id="review-<%= review.id %>">
     <div class="review-header">
       <a href="/games/<%= review.gameId %>" class="review-game-link"><%= review.gameTitle %></a>
@@ -37,7 +37,6 @@
         <input type="hidden" name="returnTo" value="/profile">
         <button type="submit" class="delete-btn">Видалити</button>
       </form>
-    </div>
   </li>
 <% }) %>
 
