@@ -18,6 +18,10 @@ export const reviewService = {
         return await ReviewRepository.FindReviews(filter);
     },
 
+    async GetLatestGameReviews(gameId: string): Promise<ReviewViewModel[]> {
+        return await ReviewRepository.FindLatestReviewsByGameId(gameId);
+    },
+
     async GetReviewById(id: string): Promise<ReviewViewModel | null> {
         return await ReviewRepository.FindReviewByReviewId(id);
     },

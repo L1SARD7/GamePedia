@@ -26,6 +26,15 @@ export const ReviewRepository = {
             .findOne({ id: id });
     },
 
+    async FindLatestReviewsByGameId(gameId: string): Promise<ReviewViewModel[]> {
+        return await client
+            .db('GamePedia')
+            .collection<ReviewViewModel>('reviews')
+            .find({ gameId })
+            .sort({ createdAt: -1 })
+            .toArray();
+    },
+
     async CreateNewReview(newReview: ReviewViewModel) {
         return await client
             .db('GamePedia')

@@ -136,7 +136,7 @@ GamesRouter.get(
             res.sendStatus(HTTP_CODES.NOT_FOUND_404);
             return;
         }
-        const Reviews = await reviewService.GetReviews(req.params.id, null);
+        const Reviews = await reviewService.GetLatestGameReviews(req.params.id);
         res.status(HTTP_CODES.OK_200).render('game-page', {
             game: FoundGame,
             reviews: Reviews,
