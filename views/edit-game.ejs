@@ -17,7 +17,7 @@
                     <%= error %>
                 </div>
                 <% } %>
-                    <form action="/games/<%= game.id %>?_method=PUT" method="POST" class="auth-form"">
+                    <form action="/games/<%= game.id %>?_method=PUT" method="POST" class="auth-form game-form">
         <label>Назва гри:<br>
             <input type=" text" name="title" required value="<%= game.title %>">
                         </label><br>

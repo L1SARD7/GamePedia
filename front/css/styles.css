@@ -117,7 +117,10 @@ h1 {
 
 .auth-form input[type="text"],
 .auth-form input[type="email"],
-.auth-form input[type="password"] {
+.auth-form input[type="password"] 
+.auth-form input[type="password"],
+.auth-form input[type="number"],
+.auth-form textarea {
     width: 96%;
     margin-top: 4px;
     margin-bottom: 12px;
@@ -129,8 +132,30 @@ h1 {
     font-size: 1rem;
 }
 
+.auth-form textarea {
+    min-height: 140px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
 .auth-form button {
     width: 100%;
+}
+
+.auth-form.game-form {
+    max-width: 760px;
+}
+
+.auth-form.review-form {
+    max-width: 760px;
+    margin: 0 0 16px 0;
+}
+
+.auth-form.game-form input[type="text"],
+.auth-form.game-form input[type="number"],
+.auth-form.game-form textarea {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .profile-card {
@@ -271,7 +296,7 @@ h1 {
 
 .profile-reviews {
     max-width: 700px;
-    margin: 0 auto;
+    margin: 0;
 }
 
 .review-list {
@@ -361,6 +386,37 @@ h1 {
     border: 1px solid #ffd700;
     background: #232438;
     box-shadow: 0 0 8px #ffd70044;
+}
+
+.review-edit-form textarea,
+.review-form textarea {
+    width: 100%;
+    max-width: 700px;
+    min-height: 130px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    border: 1px solid #44495a;
+    background: #23263a;
+    color: #fff;
+    font-size: 1.02rem;
+    line-height: 1.5;
+    padding: 10px 12px;
+    resize: vertical;
+}
+
+.review-edit-form .rating-input {
+    width: 74px;
+    margin-left: 6px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #44495a;
+    background: #23263a;
+    color: #fff;
+}
+
+.review-text,
+.game-description p {
+    white-space: pre-line;
 }
 
 .user-review-block h3 {
