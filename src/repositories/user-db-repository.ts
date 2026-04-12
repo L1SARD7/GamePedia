@@ -2,7 +2,7 @@ import { client } from '../db/db';
 import type { UserDbModel } from '../models/UserDbViewModel';
 
 export const UserRepository = {
-    async FindUserByLogin(login: string): Promise<UserDbModel | null> {
+    async findUserByLogin(login: string): Promise<UserDbModel | null> {
         return await client
             .db('GamePedia')
             .collection<UserDbModel>('users')
@@ -13,7 +13,7 @@ export const UserRepository = {
         return await client.db('GamePedia').collection<UserDbModel>('users').findOne({ id: id });
     },
 
-    async CreateNewUser(newUser: UserDbModel): Promise<boolean> {
+    async createNewUser(newUser: UserDbModel): Promise<boolean> {
         const result = await client
             .db('GamePedia')
             .collection<UserDbModel>('users')

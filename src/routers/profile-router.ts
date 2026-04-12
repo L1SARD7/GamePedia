@@ -15,9 +15,9 @@ ProfileRouter.get(
         if (!req.user) {
             return res.redirect('/login');
         }
-        const ReviewsMadedByUser = await reviewService.GetReviews(null, req.user.id);
+        const ReviewsMadedByUser = await reviewService.getReviews(null, req.user.id);
         const gameIds = [...new Set(ReviewsMadedByUser.map((r) => r.gameId))];
-        const games = await gamesService.GetManyGamesByID(gameIds);
+        const games = await gamesService.getManyGamesByID(gameIds);
         const userReviews = ReviewsMadedByUser.map((review) => {
             const game = games.find((g) => g.id === review.gameId);
             if (!game) {

@@ -63,14 +63,14 @@ RegistrationRouter.post(
             });
         }
 
-        const exist = await UserRepository.FindUserByLogin(req.body.login);
+        const exist = await UserRepository.findUserByLogin(req.body.login);
         if (exist) {
             return res.status(HTTP_CODES.BAD_REQUEST_400).render('registration', {
                 errors: { login: { msg: 'Користувач з таким логіном вже існує' } },
                 formData: formData,
             });
         }
-        const CreatedUser = await UserService.CreateNewUser(
+        const CreatedUser = await UserService.createNewUser(
             req.body.login,
             req.body.email,
             req.body.password,

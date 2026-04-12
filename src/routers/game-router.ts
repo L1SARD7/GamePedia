@@ -47,7 +47,7 @@ GamesRouter.post(
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const CreatedGame = await gamesService.CreateNewGame(
+        const CreatedGame = await gamesService.createNewGame(
             req.body.title,
             req.body.genre,
             req.body.release_year,
@@ -75,7 +75,7 @@ GamesRouter.get(
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const gamesList = await gamesService.GetGamesByFilter(req.query.title ?? null, null);
+        const gamesList = await gamesService.getGamesByFilter(req.query.title ?? null, null);
         res.render('games-list', { games: gamesList });
     }),
 );
@@ -90,7 +90,7 @@ GamesRouter.get(
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const SortedGames = await gamesService.GetGamesByFilter(
+        const SortedGames = await gamesService.getGamesByFilter(
             req.query.title ?? null,
             req.query.genre ?? null,
         );
@@ -131,12 +131,12 @@ GamesRouter.get(
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const FoundGame = await gamesService.GetGameByID(req.params.id);
+        const FoundGame = await gamesService.getGameByID(req.params.id);
         if (!FoundGame) {
             res.sendStatus(HTTP_CODES.NOT_FOUND_404);
             return;
         }
-        const Reviews = await reviewService.GetLatestGameReviews(req.params.id);
+        const Reviews = await reviewService.getLatestGameReviews(req.params.id);
         res.status(HTTP_CODES.OK_200).render('game-page', {
             game: FoundGame,
             reviews: Reviews,
@@ -155,7 +155,7 @@ GamesRouter.get(
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const SelectedGame = await gamesService.GetGameByID(req.params.id);
+        const SelectedGame = await gamesService.getGameByID(req.params.id);
         if (!SelectedGame) {
             res.sendStatus(HTTP_CODES.NOT_FOUND_404);
             return;
@@ -175,7 +175,7 @@ GamesRouter.delete(
             res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
             return;
         }
-        const isDeleted = await gamesService.DeleteGame(req.params.id);
+        const isDeleted = await gamesService.deleteGame(req.params.id);
         if (!isDeleted) {
             res.sendStatus(HTTP_CODES.NOT_FOUND_404);
             return;
@@ -197,7 +197,7 @@ GamesRouter.put(
                 res.status(HTTP_CODES.BAD_REQUEST_400).send({ errors: validation.array() });
                 return;
             }
-            const UpdatedGame = await gamesService.UpdateGame(
+            const UpdatedGame = await gamesService.updateGame(
                 req.params.id,
                 req.body.title,
                 req.body.genre,

@@ -6,17 +6,17 @@ import { gamesService } from '../../src/business/games-service';
 
 jest.mock('../../src/business/review-service', () => ({
     reviewService: {
-        GetReviews: jest.fn(),
-        CreateNewReview: jest.fn(),
-        GetReviewById: jest.fn(),
-        ChangeReview: jest.fn(),
-        DeleteReview: jest.fn(),
+        getReviews: jest.fn(),
+        createNewReview: jest.fn(),
+        getReviewById: jest.fn(),
+        changeReview: jest.fn(),
+        deleteReview: jest.fn(),
     },
 }));
 
 jest.mock('../../src/business/games-service', () => ({
     gamesService: {
-        UpdateAvgRating: jest.fn(),
+        updateAvgRating: jest.fn(),
     },
 }));
 
@@ -50,7 +50,7 @@ describe('review router tests (junior style)', () => {
 
     it('should block duplicate review from same user for same game', async () => {
         const app = createApp();
-        (reviewService.GetReviews as jest.Mock).mockResolvedValueOnce([{ id: 'existing' }]);
+        (reviewService.getReviews as jest.Mock).mockResolvedValueOnce([{ id: 'existing' }]);
 
         const res = await request(app)
             .post('/review/game-1')
@@ -66,14 +66,14 @@ describe('review router tests (junior style)', () => {
             .send({ rating: 9, text: 'duplicate review' });
 
         expect(res.status).toBe(409);
-        expect(reviewService.CreateNewReview).not.toHaveBeenCalled();
+        expect(reviewService.createNewReview).not.toHaveBeenCalled();
     });
 
     it('should create review and update game avg rating', async () => {
         const app = createApp();
-        (reviewService.GetReviews as jest.Mock).mockResolvedValueOnce([]);
-        (reviewService.CreateNewReview as jest.Mock).mockResolvedValue({ id: 'new-review-id' });
-        (gamesService.UpdateAvgRating as jest.Mock).mockResolvedValue(true);
+        (reviewService.getReviews as jest.Mock).mockResolvedValueOnce([]);
+        (reviewService.createNewReview as jest.Mock).mockResolvedValue({ id: 'new-review-id' });
+        (gamesService.updateAvgRating as jest.Mock).mockResolvedValue(true);
 
         const res = await request(app)
             .post('/review/game-2')
@@ -90,12 +90,12 @@ describe('review router tests (junior style)', () => {
 
         expect(res.status).toBe(302);
         expect(res.headers.location).toBe('/games/game-2');
-        expect(gamesService.UpdateAvgRating).toHaveBeenCalledWith('game-2');
+        expect(gamesService.updateAvgRating).toHaveBeenCalledWith('game-2');
     });
 
     it('should not allow editing someone else review', async () => {
         const app = createApp();
-        (reviewService.GetReviewById as jest.Mock).mockResolvedValue({
+        (reviewService.getReviewById as jest.Mock).mockResolvedValue({
             id: 'review-44',
             authorId: 'another-user',
             gameId: 'game-44',
@@ -119,13 +119,13 @@ describe('review router tests (junior style)', () => {
 
     it('should delete own review and redirect back', async () => {
         const app = createApp();
-        (reviewService.GetReviewById as jest.Mock).mockResolvedValue({
+        (reviewService.getReviewById as jest.Mock).mockResolvedValue({
             id: 'review-55',
             gameId: 'game-55',
             authorId: 'author-55',
         });
-        (reviewService.DeleteReview as jest.Mock).mockResolvedValue(true);
-        (gamesService.UpdateAvgRating as jest.Mock).mockResolvedValue(true);
+        (reviewService.deleteReview as jest.Mock).mockResolvedValue(true);
+        (gamesService.updateAvgRating as jest.Mock).mockResolvedValue(true);
 
         const res = await request(app)
             .delete('/review/review-55')

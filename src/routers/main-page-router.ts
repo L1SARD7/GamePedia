@@ -9,8 +9,8 @@ export const MainRouter = Router({});
 MainRouter.get(
     '/',
     asyncErrorHandler(async (req: Request, res: Response) => {
-        const newGames = await gamesService.GetLatestGames();
-        const topGames = await gamesService.GetTopRatedGames();
+        const newGames = await gamesService.getLatestGames();
+        const topGames = await gamesService.getTopRatedGames();
         res.status(HTTP_CODES.OK_200).render('main', { newGames, topGames });
     }),
 );

@@ -3,7 +3,7 @@ import { client } from '../db/db';
 import type { ReviewViewModel } from '../models/ReviewViewModel';
 
 export const ReviewRepository = {
-    async FindReviews(filter: Filter<ReviewViewModel>): Promise<ReviewViewModel[]> {
+    async findReviews(filter: Filter<ReviewViewModel>): Promise<ReviewViewModel[]> {
         return await client
             .db('GamePedia')
             .collection<ReviewViewModel>('reviews')
@@ -11,7 +11,7 @@ export const ReviewRepository = {
             .toArray();
     },
 
-    async FindReviewByUserId(id: string): Promise<ReviewViewModel[]> {
+    async findReviewByUserId(id: string): Promise<ReviewViewModel[]> {
         return await client
             .db('GamePedia')
             .collection<ReviewViewModel>('reviews')
@@ -19,14 +19,14 @@ export const ReviewRepository = {
             .toArray();
     },
 
-    async FindReviewByReviewId(id: string): Promise<ReviewViewModel | null> {
+    async findReviewByReviewId(id: string): Promise<ReviewViewModel | null> {
         return await client
             .db('GamePedia')
             .collection<ReviewViewModel>('reviews')
             .findOne({ id: id });
     },
 
-    async FindLatestReviewsByGameId(gameId: string): Promise<ReviewViewModel[]> {
+    async findLatestReviewsByGameId(gameId: string): Promise<ReviewViewModel[]> {
         return await client
             .db('GamePedia')
             .collection<ReviewViewModel>('reviews')
@@ -35,14 +35,14 @@ export const ReviewRepository = {
             .toArray();
     },
 
-    async CreateNewReview(newReview: ReviewViewModel) {
+    async createNewReview(newReview: ReviewViewModel) {
         return await client
             .db('GamePedia')
             .collection<ReviewViewModel>('reviews')
             .insertOne(newReview);
     },
 
-    async DeleteReview(id: string): Promise<boolean> {
+    async deleteReview(id: string): Promise<boolean> {
         const result = await client
             .db('GamePedia')
             .collection<ReviewViewModel>('reviews')
@@ -50,7 +50,7 @@ export const ReviewRepository = {
         return result.deletedCount === 1;
     },
 
-    async DeleteAllReviewsOfDeletedGame(id: string): Promise<boolean> {
+    async deleteAllReviewsOfDeletedGame(id: string): Promise<boolean> {
         const result = await client
             .db('GamePedia')
             .collection<ReviewViewModel>('reviews')
@@ -58,7 +58,7 @@ export const ReviewRepository = {
         return result.acknowledged;
     },
 
-    async ChangeReview(id: string, data: Partial<ReviewViewModel>): Promise<boolean> {
+    async changeReview(id: string, data: Partial<ReviewViewModel>): Promise<boolean> {
         const result = await client
             .db('GamePedia')
             .collection<ReviewViewModel>('reviews')

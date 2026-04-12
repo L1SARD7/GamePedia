@@ -8,7 +8,7 @@ import type { UserInfoModel } from '../models/UserViewModel';
 const SaltRounds = 10;
 
 export const UserService = {
-    async CreateNewUser(
+    async createNewUser(
         login: string,
         email: string,
         password: string,
@@ -26,13 +26,13 @@ export const UserService = {
             },
             createdAt: new Date().toISOString(),
         };
-        await UserRepository.CreateNewUser(newUser);
+        await UserRepository.createNewUser(newUser);
         emailAdapter.sendConfirmationCode(
             newUser.email,
             newUser.emailVerification.confirmationCode,
             newUser.id,
         );
-        const CreatedUser = await UserRepository.FindUserByLogin(newUser.login);
+        const CreatedUser = await UserRepository.findUserByLogin(newUser.login);
         return CreatedUser;
     },
 
@@ -40,7 +40,7 @@ export const UserService = {
         login: string,
         password: string,
     ): Promise<UserInfoModel | 'unconfirmed email' | null> {
-        const user = await UserRepository.FindUserByLogin(login);
+        const user = await UserRepository.findUserByLogin(login);
         if (!user) {
             return null;
         }

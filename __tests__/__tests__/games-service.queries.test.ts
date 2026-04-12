@@ -4,15 +4,15 @@ import { reviewService } from '../../src/business/review-service';
 
 jest.mock('../../src/repositories/games-db-repository', () => ({
     GamesRepository: {
-        GetGames: jest.fn(),
-        GetSortedGames: jest.fn(),
-        UpdateGame: jest.fn(),
+        getGames: jest.fn(),
+        getSortedGames: jest.fn(),
+        updateGame: jest.fn(),
     },
 }));
 
 jest.mock('../../src/business/review-service', () => ({
     reviewService: {
-        GetReviews: jest.fn(),
+        getReviews: jest.fn(),
     },
 }));
 
@@ -22,47 +22,47 @@ describe('gamesService tests (junior style)', () => {
     });
 
     it('should build filter with title and genre', async () => {
-        (GamesRepository.GetGames as jest.Mock).mockResolvedValue([]);
+        (GamesRepository.getGames as jest.Mock).mockResolvedValue([]);
 
-        await gamesService.GetGamesByFilter('witch', 'RPG');
+        await gamesService.getGamesByFilter('witch', 'RPG');
 
-        expect(GamesRepository.GetGames).toHaveBeenCalledWith({
+        expect(GamesRepository.getGames).toHaveBeenCalledWith({
             title: { $regex: 'witch', $options: 'i' },
             genre: 'RPG',
         });
     });
 
     it('should request latest games with createdAt sort', async () => {
-        await gamesService.GetLatestGames();
+        await gamesService.getLatestGames();
 
-        expect(GamesRepository.GetSortedGames).toHaveBeenCalledWith({ createdAt: -1 });
+        expect(GamesRepository.getSortedGames).toHaveBeenCalledWith({ createdAt: -1 });
     });
 
     it('should request top rated games with avgRating sort', async () => {
-        await gamesService.GetTopRatedGames();
+        await gamesService.getTopRatedGames();
 
-        expect(GamesRepository.GetSortedGames).toHaveBeenCalledWith({ avgRating: -1 });
+        expect(GamesRepository.getSortedGames).toHaveBeenCalledWith({ avgRating: -1 });
     });
 
     it('should update avg rating to rounded number', async () => {
-        (reviewService.GetReviews as jest.Mock).mockResolvedValue([
+        (reviewService.getReviews as jest.Mock).mockResolvedValue([
             { rating: 10 },
             { rating: 8 },
             { rating: 9 },
         ]);
-        (GamesRepository.UpdateGame as jest.Mock).mockResolvedValue(true);
+        (GamesRepository.updateGame as jest.Mock).mockResolvedValue(true);
 
-        await gamesService.UpdateAvgRating('game-1');
+        await gamesService.updateAvgRating('game-1');
 
-        expect(GamesRepository.UpdateGame).toHaveBeenCalledWith('game-1', { avgRating: 9 });
+        expect(GamesRepository.updateGame).toHaveBeenCalledWith('game-1', { avgRating: 9 });
     });
 
     it('should set avg rating to null when there are no valid ratings', async () => {
-        (reviewService.GetReviews as jest.Mock).mockResolvedValue([{ rating: Number.NaN }]);
-        (GamesRepository.UpdateGame as jest.Mock).mockResolvedValue(true);
+        (reviewService.getReviews as jest.Mock).mockResolvedValue([{ rating: Number.NaN }]);
+        (GamesRepository.updateGame as jest.Mock).mockResolvedValue(true);
 
-        await gamesService.UpdateAvgRating('game-2');
+        await gamesService.updateAvgRating('game-2');
 
-        expect(GamesRepository.UpdateGame).toHaveBeenCalledWith('game-2', { avgRating: null });
+        expect(GamesRepository.updateGame).toHaveBeenCalledWith('game-2', { avgRating: null });
     });
 });
