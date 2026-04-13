@@ -12,6 +12,7 @@ import { UserRepository } from '../repositories/user-db-repository';
 import type { RegistrationInputModel } from '../models/RegistrationInputModel';
 import { UserService } from '../business/user-service';
 import { asyncErrorHandler } from '../validator/async-error-handler';
+import { authLimiter } from '../validator/rate-limit-middleware';
 
 export const RegistrationRouter = Router({});
 
@@ -41,6 +42,7 @@ RegistrationRouter.get('/', (req: Request, res: Response) => {
 
 RegistrationRouter.post(
     '/',
+    authLimiter,
     bodyLoginValidatorMiddleware,
     bodyemailValidatorMiddleware,
     bodyPasswordValidatorMiddleware,

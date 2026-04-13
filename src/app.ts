@@ -11,6 +11,7 @@ import { jwtService } from './application/jwtService';
 import { globalErrorHandler } from './validator/error-handler';
 import { asyncErrorHandler } from './validator/async-error-handler';
 import type { AppError } from './models/AppError';
+import { apiLimiter } from './validator/rate-limit-middleware';
 
 export const app = express();
 
@@ -36,6 +37,8 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 
 app.use(methodOverride('_method'));
+
+app.use(apiLimiter);
 
 app.use('/games', GamesRouter);
 

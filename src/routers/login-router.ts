@@ -12,6 +12,7 @@ import { UserService } from '../business/user-service';
 import { jwtService } from '../application/jwtService';
 import { config } from '../config';
 import { asyncErrorHandler } from '../validator/async-error-handler';
+import { authLimiter } from '../validator/rate-limit-middleware';
 
 export const LoginRouter = Router({});
 
@@ -21,6 +22,7 @@ LoginRouter.get('/', (req: Request, res: Response) => {
 
 LoginRouter.post(
     '/',
+    authLimiter,
     bodyLoginValidatorMiddleware,
     bodyPasswordValidatorMiddleware,
     asyncErrorHandler(async (req: RequestWithBody<LoginInputModel>, res: Response) => {
